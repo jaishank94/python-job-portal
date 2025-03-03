@@ -1,0 +1,1375 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="{% static 'job_app/logo.png' %}">
+    <title>
+        {% if company_filters.list_id %}
+            {% for list in company_lists %}
+                {% if company_filters.list_id == list.id|stringformat:"s" %}
+                    {{ list.description }} - Pages
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            List of Companies - Pages
+        {% endif %}
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: white;
+            font-weight: 400;
+        }
+        .nav-link {
+            color: #64748b;
+            font-weight: 400;
+            padding: 0.425rem 0.85rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+            font-size: 0.80rem;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #0f172a;
+            background-color: #f8fafc;
+        }
+        .site-name {
+            color: #64748b;
+            font-weight: 400;
+            font-size: 0.80rem;
+        }
+        .table-header {
+            color: #0f172a;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            background-color: #f8fafc;
+        }
+        .table-row {
+            transition: all 0.2s;
+            cursor: pointer;
+            background-color: white;
+            font-weight: 400;
+        }
+        .table-row:hover {
+            background-color: #f8fafc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .table-row:nth-child(4n+2), .table-row:nth-child(4n+3) {
+            background-color: #f8fafc;
+        }
+        .filter-input {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.375rem;
+            padding: 0.625rem 1rem;
+            font-size: 0.80rem;
+            /* width: 100%; */
+            background-color: white;
+            font-weight: 500;
+            color: #64748b;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        .filter-input:hover {
+            border-color: #cbd5e1;
+        }
+        .filter-input:focus {
+            border-color: #cbd5e1;
+            outline: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .filter-input::placeholder {
+            color: #94a3b8;
+            font-weight: 400;
+        }
+        .filter-group {
+            position: relative;
+            max-width: 180px;
+        }
+        /* .filter-button {
+            background-color: #f8fafc;
+            color: #64748b;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-size: 0.80rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            border-radius: 0.375rem;
+        }
+        .filter-button:hover {
+            background-color: #f1f5f9;
+        }
+        .filter-button svg {
+            width: 1rem;
+            height: 1rem;
+            margin-left: 0.5rem;
+            stroke-width: 2;
+        } */
+        .filter-button {
+            color: rgb(180, 180, 180);
+        }
+        .filter-button.active {
+            color: black;
+        }
+        .filter-content {
+            position: absolute;
+            width: 100%;
+            z-index: 10;
+            background-color: white;
+            border-radius: 0.375rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .filter-dropdown .filter-input:hover {
+            background-color: #e5e7eb;
+        }
+        .clear-button {
+            background-color: #f8fafc;
+            color: #64748b;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s;
+            border: none;
+            font-size: 0.80rem;
+            min-width: 8rem;
+        }
+        .clear-button:hover {
+            background-color: #f1f5f9;
+        }
+        .apply-button {
+            background-color: #f8fafc;
+            color: #64748b;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s;
+            border: none;
+            font-size: 0.80rem;
+            min-width: 8rem;
+            margin-left: 0.5rem;
+        }
+        .apply-button:hover {
+            background-color: #f1f5f9;
+        }
+        .description-row {
+            display: none;
+            background-color: white;
+            transition: all 0.3s ease-in-out;
+            max-height: 0;
+            overflow: hidden;
+        }
+        .description-row.active {
+            display: table-row;
+            max-height: 500px;
+        }
+        .description-cell {
+            padding: 1rem 1.5rem;
+            background-color: #fafafa;
+            border-top: 1px solid #e5e7eb;
+            animation: slideDown 0.3s ease-out forwards;
+        }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .filter-dropdown {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        .filter-dropdown .filter-input {
+            background-color: #f8fafc;
+            color: #0f172a;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.375rem;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+            min-width: 16rem;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3e%3c/svg%3e");
+            background-position: right 1rem center;
+            background-repeat: no-repeat;
+            background-size: 1rem 1rem;
+            padding-right: 2.5rem;
+        }
+        .filter-dropdown .filter-input:hover {
+            background-color: #f1f5f9;
+        }
+
+        #loadMoreBtn {
+            background-color: #f8fafc;
+            color: #64748b;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s;
+            border: none;
+            font-size: 0.80rem;
+            min-width: 16rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #loadMoreBtn:hover {
+            background-color: #f1f5f9;
+        }
+        #loadMoreBtn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 50;
+            backdrop-filter: blur(4px);
+        }
+
+        .popup-content {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            max-width: 24rem;
+            width: 90%;
+            z-index: 51;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #E5E7EB;
+            border-radius: 0.375rem;
+            background-color: #F9FAFB;
+            font-size: 0.75rem;
+            line-height: 1rem;
+            color: #374151;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #94a3b8;
+        }
+
+        .btn-signin {
+            background-color: #0f172a;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+            padding: 0.6rem 1rem;
+        }
+
+        .btn-signin:hover {
+            background-color: #1e293b;
+            transform: scale(1.02);
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 4px 8px;
+            background-color: #1f2937;
+            color: white;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            z-index: 20;
+        }
+        .tooltip:hover::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 4px;
+            border-style: solid;
+            border-color: #1f2937 transparent transparent transparent;
+        }
+
+        /* Mobile view styles */
+        @media (max-width: 768px) {
+            .mobile-hidden {
+                display: none;
+            }
+            .mobile-full-width {
+                width: 100%;
+            }
+            /* .table-view {
+                display: none;
+            } */
+            .card-view {
+                display: block;
+                padding: 0.5rem;
+                width: 95%;
+                margin: 0 auto;
+                padding-left: 0;
+            }
+            /* Filter styles for mobile */
+            #filterForm {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 0.75rem !important;
+                padding: 0 0.5rem;
+                padding-left: 0;
+                margin-left: 0;
+            }
+            .filter-group {
+                max-width: 180px;
+                /* width: 100%; */
+            }
+            .filter-button {
+                width: 100%;
+                font-size: 0.75rem;
+                padding: 0.4rem 0.75rem;
+            }
+            .filter-content {
+                width: 100%;
+            }
+            .filter-input {
+                font-size: 0.75rem;
+                padding: 0.4rem 0.75rem;
+            }
+            /* Action buttons container */
+            .filter-actions {
+                grid-column: span 2;
+                display: flex;
+                justify-content: center;
+                gap: 0.5rem;
+                margin-top: 0.5rem;
+                margin-left: 0;
+                padding-left: 0;
+            }
+            .clear-button,
+            .apply-button {
+                min-width: auto;
+                flex: 1;
+                margin: 0;
+                font-size: 0.75rem;
+                padding: 0.4rem 0.75rem;
+                text-align: center;
+            }
+            .company-card {
+                background: white;
+                border-radius: 0.5rem;
+                padding: 1.25rem;
+                margin-bottom: 1rem;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                cursor: pointer;
+                transition: all 0.2s;
+                width: 100%;
+            }
+            .company-card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 0.5rem;
+            }
+            .company-card-main {
+                flex: 1;
+            }
+            .company-card-action {
+                margin-left: 1rem;
+            }
+            .company-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+            .company-card-name {
+                font-size: 1rem;
+                font-weight: 500;
+                color: #0f172a;
+                margin-bottom: 0.5rem;
+            }
+            .company-card-info {
+                font-size: 0.875rem;
+                color: #64748b;
+                margin-bottom: 0.25rem;
+            }
+            .company-card-expanded {
+                display: none;
+                padding-top: 1rem;
+                margin-top: 1rem;
+                border-top: 1px solid #e5e7eb;
+            }
+            .company-card-expanded.active {
+                display: block;
+            }
+            .company-card-section {
+                margin-bottom: 1rem;
+            }
+            .company-card-section-title {
+                font-weight: 500;
+                color: #0f172a;
+                margin-bottom: 0.5rem;
+            }
+            .company-card-action {
+                margin-left: 1rem;
+                display: flex;
+                align-items: center;
+            }
+            .company-card-action a, 
+            .apply-button {
+                white-space: nowrap;
+                display: inline-flex;
+                align-items: center;
+                padding: 0.5rem 1rem;
+                min-width: auto;
+                width: auto;
+            }
+            .company-card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .company-card-main {
+                flex: 1;
+                min-width: 0;
+            }
+        }
+        @media (min-width: 769px) {
+            .table-view {
+                display: block;
+            }
+            .card-view {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .popup-content {
+                width: 80%;
+                padding: 1rem;
+                max-height: 80vh;
+                overflow-y: auto;
+                margin: 0.75rem;
+                top: 45%;
+            }
+            .popup-overlay {
+                padding: 0.75rem;
+            }
+            .input-field {
+                font-size: 0.875rem;
+                padding: 0.5rem;
+            }
+            .btn-signin {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.875rem;
+            }
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .header-nav {
+                gap: 0.75rem;
+                padding: 0 0.5rem;
+            }
+            .nav-link {
+                font-size: 0.875rem;
+                padding: 0.5rem 0.25rem;
+            }
+        }
+
+        /* .filter-button.active {
+            background-color: #e2e8f0;
+        } */
+
+        .bg-white.rounded-lg.py-6.pr-6.mb-8.ml-0 {
+            margin-left: 0;
+            padding-left: 0;
+        }
+
+        #filterForm {
+            padding-left: 0;
+            margin-left: 0;
+        }
+
+        .filter-actions {
+            margin-left: 0;
+            padding-left: 0;
+        }
+    </style>
+    <script>
+        function toggleCompanyDescription(row, descriptionId) {
+            const descriptionRow = document.getElementById(descriptionId);
+            const allDescriptionRows = document.querySelectorAll('.description-row');
+            
+            // Close all other description rows
+            allDescriptionRows.forEach(dr => {
+                if (dr.id !== descriptionId && dr.classList.contains('active')) {
+                    dr.classList.remove('active');
+                    dr.style.display = 'none';
+                }
+            });
+            
+            // Toggle the clicked description row
+            if (descriptionRow.classList.contains('active')) {
+                descriptionRow.classList.remove('active');
+                descriptionRow.style.display = 'none';
+            } else {
+                descriptionRow.classList.add('active');
+                descriptionRow.style.display = 'table-row';
+            }
+
+            // Add animation to the clicked row
+            row.style.transform = 'translateY(-2px)';
+            setTimeout(() => {
+                row.style.transform = 'translateY(0)';
+            }, 200);
+        }
+    </script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center space-x-6">
+                    <span class="site-name">Pages</span>
+                    <div class="flex items-center space-x-4">
+                        <a href="{% url 'companies' %}" class="nav-link active">Companies</a>
+                        <a href="{% url 'jobs' %}" class="nav-link">Jobs</a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="nav-link">Login</a>
+                        <a href="{% url 'register' %}" class="nav-link">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+<!-- Sticky Menu Button (Mobile Only) -->
+<div class="fixed bottom-4 left-4 z-50 sm:hidden">
+    <button id="openDrawer" class="bg-white text-gray-600 p-3 rounded-full shadow-lg hover:bg-gray-100 transition">
+        <!-- Heroicons Menu Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7"/>
+        </svg>
+    </button>
+</div>
+
+<!-- Side Drawer (Initially Hidden) -->
+<div id="filterDrawer" class="fixed inset-0 bg-black bg-opacity-50 hidden sm:hidden">
+    <div class="fixed top-0 left-0 h-full w-64 bg-white shadow-lg transform -translate-x-full transition-transform duration-300" id="drawerMenu">
+        <!-- Drawer Header -->
+        <div class="p-4 flex justify-between items-center border-b">
+            <h2 class="text-lg font-semibold">Filters</h2>
+            <button id="closeDrawer" class="text-gray-500 hover:text-gray-800">
+                <!-- Close (X) Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Job Filters -->
+    <div class="p-4">
+        <form id="filterForm">
+            <div class="filter-group">
+                <button type="button" class="filter-button w-full flex justify-between items-center px-2 py-2 rounded-md">
+                    <span class="font-light text-base">Company</span>
+                    <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="filter-content hidden mt-2">
+                    <input type="text" name="name" value="{{ company_filters.name }}" class="filter-input w-full border px-2 py-1 rounded" placeholder="e.g. Software Engineer">
+                </div>
+            </div>
+
+            <!-- More Filters -->
+            <div class="filter-group mt-4">
+                <button type="button" class="filter-button w-full flex justify-between items-center px-2 py-2 rounded-md">
+                    <span class="font-light text-base">Headquarters</span>
+                    <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="filter-content hidden mt-2">
+                    <input type="text" name="headquarters" value="{{ company_filters.headquarters }}" class="filter-input w-full border px-2 py-1 rounded" placeholder="e.g. Stripe">
+                </div>
+            </div>
+
+            <!-- Apply & Clear Filters -->
+            <div class="mt-4 flex justify-between">
+                <button type="button" onclick="clearFilters()" class="border border-gray-300 text-gray-400 text-xs px-4 py-2 rounded opacity-50">Clear Filters</button>
+                <button type="button" onclick="applyFilters()" class="bg-gray-300 text-gray-500 text-xs px-4 py-2 rounded opacity-50">Apply Filters</button>
+            </div>
+        </form>
+    </div>
+    </div>
+</div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- <h1 class="text-gray-500" style="font-size: 0.80rem;">
+            {% if company_filters.list_id %}
+                {% for list in company_lists %}
+                    {% if company_filters.list_id == list.id|stringformat:"s" %}
+                        <span class="text-gray-900 font-medium">{{ list.description }}</span>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <span class="text-gray-900 font-light text-base">Filters</span>
+            {% endif %}
+        </h1> -->
+
+        <!-- Company Filters -->
+        <div class="bg-white rounded-lg py-6 pr-6 mb-8 ml-0 hidden md:block">
+            <!-- <form method="GET" class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-3" id="filterForm" onsubmit="return false;"> -->
+            <form method="GET" class="flex flex-row overflow-x-auto" id="filterForm" onsubmit="return false;">
+                <div class="filter-group">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-base">Name</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="text" name="name" value="{{ company_filters.name }}" class="filter-input" placeholder="e.g. Stripe">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-base">Description</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="text" name="description" value="{{ company_filters.description }}" class="filter-input" placeholder="e.g. Artificial Intelligence">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-base">Valuation ($M)</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="number" name="min_valuation" value="{{ company_filters.min_valuation }}" class="filter-input mb-2" placeholder="Min Valuation">
+                        <input type="number" name="max_valuation" value="{{ company_filters.max_valuation }}" class="filter-input" placeholder="Max Valuation">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-base">Last Funding Stage</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="text" name="funding_stage" value="{{ company_filters.funding_stage }}" class="filter-input" placeholder="e.g. Series A">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-base">Last Funding Amount</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="number" name="min_latest_funding_amount" value="{{ company_filters.min_latest_funding_amount }}" class="filter-input mb-2" placeholder="Min Amount">
+                        <input type="number" name="max_latest_funding_amount" value="{{ company_filters.max_latest_funding_amount }}" class="filter-input" placeholder="Max Amount">
+                    </div>
+                </div>
+
+                <div class="filter-group" data-filter="latest_funding_date">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-base">Last Funding Date</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="date" name="min_latest_funding_date" id="min_latest_funding_date" value="{{ company_filters.min_latest_funding_date|date:'Y-m-d' }}" class="filter-input mb-2" placeholder="From Date">
+                        <input type="date" name="max_latest_funding_date" id="max_latest_funding_date" value="{{ company_filters.max_latest_funding_date|date:'Y-m-d' }}" class="filter-input" placeholder="To Date">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-base">Total Funding Amount</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="number" name="total_funding_amount" value="{{ company_filters.total_funding_amount }}" class="filter-input mb-2" placeholder="Min Amount">
+                        <input type="number" name="max_total_funding_amount" value="{{ company_filters.max_total_funding_amount }}" class="filter-input" placeholder="Max Amount">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-base">Investors</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="text" name="investors" value="{{ company_filters.investors }}" class="filter-input" placeholder="e.g. Sequoia Capital">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-base">Headquarters</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="text" name="headquarters" value="{{ company_filters.headquarters }}" class="filter-input" placeholder="e.g. New York City">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-base">Offices</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="text" name="offices" value="{{ company_filters.offices }}" class="filter-input" placeholder="e.g. New York City">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-base">Industries</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="text" name="industry" value="{{ company_filters.industry }}" class="filter-input" placeholder="e.g. Artificial Intelligence">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-base">Founded Date</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="number" name="founded_date" value="{{ company_filters.founded_date }}" class="filter-input" placeholder="e.g. 2020">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-base">Founders</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="text" name="founders" value="{{ company_filters.founders }}" class="filter-input" placeholder="e.g. Elon Musk">
+                    </div>
+                </div>
+            </form>
+
+            <div class="mt-4 ml-[0.75rem] filter-actions">
+                <button type="button" onclick="clearFilters()" class="border border-gray-300 text-gray-400 text-xs px-2 py-2 rounded-lg opacity-50">Clear Filters</button>
+                <button type="button" onclick="applyFilters()" class="bg-gray-300 text-gray-500 text-xs px-2 py-2 rounded-lg opacity-50">Apply Filters</button>
+            </div>
+        </div>
+
+        <script>
+            function clearFilters() {
+                const form = document.getElementById('filterForm');
+                const inputs = form.querySelectorAll('input');
+                inputs.forEach(input => {
+                    if (input.type === 'text' || input.type === 'number' || input.type === 'date') {
+                        input.value = '';
+                    }
+                });
+                
+                // Remove active class from all buttons
+                document.querySelectorAll('.filter-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Get the current list_id from URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const listId = urlParams.get('list_id');
+                
+                // Clear the form and submit
+                form.submit();
+                
+                // If there was a list_id, redirect to preserve it
+                if (listId) {
+                    window.location.href = '?list_id=' + listId;
+                }
+            }
+
+            function updateLastFundingDateFilter() {
+                const minLatestFundingDate = document.getElementById('min_latest_funding_date');
+                const maxLatestFundingDate = document.getElementById('max_latest_funding_date');
+                const fundingDateButton = document.querySelector('.filter-group[data-filter="latest_funding_date"] .filter-button');
+                
+                if (minLatestFundingDate && maxLatestFundingDate) {
+                    if (minLatestFundingDate.value || maxLatestFundingDate.value) {
+                        fundingDateButton.classList.add('active');
+                    } else {
+                        fundingDateButton.classList.remove('active');
+                    }
+                }
+            }
+
+            function applyFilters() {
+                const form = document.getElementById('filterForm');
+                
+                // Get the current list_id from URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const listId = urlParams.get('list_id');
+                
+                // Add list_id to the form if it exists
+                if (listId) {
+                    const listIdInput = document.createElement('input');
+                    listIdInput.type = 'hidden';
+                    listIdInput.name = 'list_id';
+                    listIdInput.value = listId;
+                    form.appendChild(listIdInput);
+                }
+                
+                updateLastFundingDateFilter();
+                form.submit();
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const filterButtons = document.querySelectorAll('.filter-button');
+                
+                filterButtons.forEach(button => {
+                    const input = button.nextElementSibling.querySelector('input');
+                    if (input.value) {
+                        button.classList.add('active');
+                    }
+                    
+                    button.addEventListener('click', function() {
+                        const content = this.nextElementSibling;
+                        const wasHidden = content.classList.contains('hidden');
+                        
+                        // Hide all filter contents
+                        document.querySelectorAll('.filter-content').forEach(content => {
+                            content.classList.add('hidden');
+                        });
+                        
+                        // Remove active class from all buttons
+                        document.querySelectorAll('.filter-button').forEach(btn => {
+                            if (!btn.nextElementSibling.querySelector('input').value) {
+                                btn.classList.remove('active');
+                            }
+                        });
+                        
+                        if (wasHidden) {
+                            content.classList.remove('hidden');
+                            this.classList.add('active');
+                        }
+                    });
+                });
+                
+                // Close dropdowns when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!event.target.closest('.filter-group')) {
+                        document.querySelectorAll('.filter-content').forEach(content => {
+                            content.classList.add('hidden');
+                        });
+                        document.querySelectorAll('.filter-button').forEach(btn => {
+                            if (!btn.nextElementSibling.querySelector('input').value) {
+                                btn.classList.remove('active');
+                            }
+                        });
+                    }
+                });
+
+                document.getElementById("openDrawer").addEventListener("click", function() {
+                    const filterDrawer = document.getElementById("filterDrawer");
+                    const drawerMenu = document.getElementById("drawerMenu");
+
+                    if (filterDrawer.classList.contains("hidden")) {
+                        filterDrawer.classList.remove("hidden"); // Open drawer
+                        drawerMenu.classList.remove("-translate-x-full");
+                    } else {
+                        filterDrawer.classList.add("hidden"); // Close drawer
+                        drawerMenu.classList.add("-translate-x-full");
+                    }
+                });
+
+                document.getElementById("closeDrawer").addEventListener("click", function() {
+                    document.getElementById("drawerMenu").classList.add("-translate-x-full");
+                    setTimeout(() => {
+                        document.getElementById("filterDrawer").classList.add("hidden");
+                    }, 300);
+                });
+
+                // Update the filter button active state for date inputs
+                const dateInputs = document.querySelectorAll('input[type="date"]');
+                dateInputs.forEach(input => {
+                    const button = input.closest('.filter-group').querySelector('.filter-button');
+                    if (input.value) {
+                        button.classList.add('active');
+                    }
+                    
+                    input.addEventListener('change', function() {
+                        if (this.value) {
+                            button.classList.add('active');
+                        } else {
+                            const siblingInput = this.closest('.filter-content').querySelector('input[type="date"]:not([name="' + this.name + '"])');
+                            if (!siblingInput.value) {
+                                button.classList.remove('active');
+                            }
+                        }
+                    });
+                });
+
+                // Handle Last Funding Date filter
+                const fundingDateButton = document.querySelector('.filter-group[data-filter="latest_funding_date"] .filter-button');
+                const minDate = document.getElementById('min_latest_funding_date');
+                const maxDate = document.getElementById('max_latest_funding_date');
+
+                // Set initial state
+                if (minDate.value || maxDate.value) {
+                    fundingDateButton.classList.add('active');
+                }
+
+                // Update state on date changes
+                [minDate, maxDate].forEach(input => {
+                    input.addEventListener('change', function() {
+                        if (minDate.value || maxDate.value) {
+                            fundingDateButton.classList.add('active');
+                        } else {
+                            fundingDateButton.classList.remove('active');
+                        }
+                    });
+                });
+
+                // Keep state after form submission
+                const form = document.getElementById('filterForm');
+                form.addEventListener('submit', function() {
+                    if (minDate.value || maxDate.value) {
+                        fundingDateButton.classList.add('active');
+                    }
+                });
+            });
+
+            function updateFilterButtonStates() {
+                const filterButtons = document.querySelectorAll('.filter-button');
+                
+                filterButtons.forEach(button => {
+                    const inputs = button.nextElementSibling.querySelectorAll('input');
+                    let hasValue = false;
+                    
+                    inputs.forEach(input => {
+                        if (input.value) {
+                            hasValue = true;
+                        }
+                    });
+                    
+                    if (hasValue) {
+                        button.classList.add('active');
+                    }
+                });
+
+                // Specifically check Last Funding Date filter
+                const minLatestFundingDate = document.getElementById('min_latest_funding_date');
+                const maxLatestFundingDate = document.getElementById('max_latest_funding_date');
+                const fundingDateButton = document.querySelector('.filter-group[data-filter="latest_funding_date"] .filter-button');
+                
+                if (minLatestFundingDate && maxLatestFundingDate && (minLatestFundingDate.value || maxLatestFundingDate.value)) {
+                    fundingDateButton.classList.add('active');
+                }
+            }
+
+            // Call on page load
+            updateFilterButtonStates();
+
+            // Call after applying filters
+            document.querySelector('.apply-button').addEventListener('click', function() {
+                setTimeout(updateFilterButtonStates, 100);
+            });
+        </script>
+
+        <!-- Company Lists Section -->
+        <div class="bg-white rounded-lg py-6 pr-6 mb-8 ml-0">
+            <form method="GET" class="w-full" id="listForm">
+                <div class="max-w-md">
+                    <select name="list_id" class="font-light" onchange="this.form.submit()">
+                        <option value="">List of Companies</option>
+                        {% for list in company_lists %}
+                            <option value="{{ list.id }}" {% if company_filters.list_id == list.id|stringformat:"s" %}selected{% endif %}>{{ list.description }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+        </div>
+
+        <!-- Companies Table -->
+        <div class="table-view bg-white rounded-lg overflow-hidden ml-[1.5rem]">
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead class="bg-white">
+                        <tr>
+                            <!-- Mobile-->
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm md:hidden"></th>
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm md:hidden">Name</th>
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm md:hidden">Headquarters</th>
+
+                            <!-- Desktop / Tab -->
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Name</th>
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Valuation</th>
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Last Funding Stage</th>
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Last Funding Amount</th>
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Last Funding Date</th>
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Total Funding Amount</th>
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Investors</th>
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Headquarters</th>
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Offices</th>
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Industries</th>
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Founded Date</th>
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Founders</th>
+                        </tr>
+                    </thead>
+                    <tbody id="companiesTableBody">
+                        {% include 'job_app/includes/company_rows.html' %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Mobile Card View -->
+        <!-- <div class="card-view"> -->
+        <div class="hidden">
+            {% for company in companies %}
+            <div class="company-card">
+                <div class="company-card-content" onclick="toggleCompanyCard(this.parentElement)">
+                    <div class="company-card-name">{{ company.name }}</div>
+                    <div class="company-card-info">
+                        {% if company.latest_funding_amount or company.latest_funding_stage %}
+                            <div>
+                                {% if company.latest_funding_amount %}${{ company.latest_funding_amount|floatformat:0|intcomma }}M{% endif %} 
+                                {{ company.latest_funding_stage }}{% if company.latest_funding_date %}, {{ company.latest_funding_date|date:"M Y" }}{% endif %}
+                            </div>
+                        {% endif %}
+                        {% if company.valuation %}
+                            <div>${{ company.valuation|floatformat:0|intcomma }}M Valuation</div>
+                        {% endif %}
+                    </div>
+                    {% if company.website %}
+                        <div class="company-card-action mt-4">
+                            <a class="apply-button w-full text-center justify-center" onclick="showLoginPopup('{{ company.website }}', event)">Visit Website</a>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="company-card-expanded">
+                    <div class="text-sm text-gray-600 pl-4 max-w-5xl">
+                        <!-- Name, Website and Description - Full Width -->
+                        <div class="mb-4">
+                            <div class="text-lg font-medium text-gray-900">{{ company.name }}</div>
+                            {% if company.website %}
+                                <a href="{{ company.website }}" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 mt-1 inline-block" onclick="event.stopPropagation()">Visit Website →</a>
+                            {% endif %}
+                            
+                            <div class="mt-3">
+                                <div class="font-medium text-gray-900 mb-1">Description</div>
+                                {% if company.description %}
+                                    {{ company.description|linebreaks }}
+                                {% else %}
+                                    No description available.
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Two Column Layout -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 pr-4">
+                            <!-- Left Column -->
+                            <div class="space-y-3">
+                                <!-- Financial Information -->
+                                <div>
+                                    <div class="font-medium text-gray-900 mb-1">Financial Information</div>
+                                    <div class="space-y-1">
+                                        <div>
+                                            <span class="text-gray-700">Valuation:</span>
+                                            {% if company.valuation %}
+                                                ${{ company.valuation|floatformat:0|intcomma }}M
+                                            {% else %}
+                                                Not specified
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-700">Last Funding Stage:</span>
+                                            {{ company.latest_funding_stage|default:"Not specified" }}
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-700">Last Funding Amount:</span>
+                                            {% if company.latest_funding_amount %}
+                                                ${{ company.latest_funding_amount|floatformat:0|intcomma }}M
+                                            {% else %}
+                                                Not specified
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-700">Last Funding Date:</span>
+                                            {% if company.latest_funding_date %}
+                                                {{ company.latest_funding_date|date:"F Y" }}
+                                            {% else %}
+                                                Not specified
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-700">Total Funding Amount:</span>
+                                            {% if company.total_funding_amount %}
+                                                ${{ company.total_funding_amount|floatformat:0|intcomma }}M
+                                            {% else %}
+                                                Not specified
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Location Information -->
+                                <div>
+                                    <div class="font-medium text-gray-900 mb-1">Location</div>
+                                    <div class="space-y-1">
+                                        <div>
+                                            <span class="text-gray-700">Headquarters:</span>
+                                            {{ company.hq|default:"Not specified" }}
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-700">Offices:</span>
+                                            {{ company.offices|default:"Not specified" }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Column -->
+                            <div class="space-y-3">
+                                <!-- Company Information -->
+                                <div>
+                                    <div class="font-medium text-gray-900 mb-1">Company Information</div>
+                                    <div class="space-y-1">
+                                        <div>
+                                            <span class="text-gray-700">Industries:</span>
+                                            {{ company.industries|default:"Not specified" }}
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-700">Founded Date:</span>
+                                            {% if company.founded_date %}
+                                                {{ company.founded_date|date:"F Y" }}
+                                            {% else %}
+                                                Not specified
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-700">Founders:</span>
+                                            {{ company.founders|default:"Not specified" }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Investors -->
+                                <div>
+                                    <div class="font-medium text-gray-900 mb-1">Investors</div>
+                                    {{ company.investors|default:"Not specified" }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center text-gray-500 py-4">No companies found</div>
+            {% endfor %}
+        </div>
+
+        {% if companies.has_next %}
+            <div class="flex justify-center py-4">
+                <button id="loadMoreBtn" class="apply-button" onclick="loadMore()">
+                    Load More
+                </button>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Login Popup -->
+    <div id="loginPopup" class="popup-overlay">
+        <div class="popup-content">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl text-gray-900 mb-1">Welcome</h2>
+                <p class="text-sm text-gray-600">Login to Visit Links</p>
+            </div>
+            <form action="{% url 'login' %}" method="POST" class="space-y-4">
+                {% csrf_token %}
+                <input type="hidden" name="next" id="nextUrl">
+                <div>
+                    <label for="popup-username" class="block text-sm text-gray-700 mb-1">Email</label>
+                    <input id="popup-username" name="username" type="email" required 
+                           class="input-field" placeholder="jane.doe@school.edu">
+                </div>
+                <div>
+                    <label for="popup-password" class="block text-sm text-gray-700 mb-1">Password</label>
+                    <input id="popup-password" name="password" type="password" required 
+                           class="input-field" placeholder="••••••••••">
+                </div>
+                <div class="mt-4">
+                    <button type="submit" class="btn-signin w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm text-white">
+                        Sign in
+                    </button>
+                </div>
+            </form>
+            <div class="text-center mt-4">
+                <p class="text-xs text-gray-600">
+                    Don't have an account? 
+                    <a href="{% url 'register' %}" class="font-medium text-gray-900 hover:text-gray-700">
+                        Register here
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleCompanyCard(card) {
+            const expandedContent = card.querySelector('.company-card-expanded');
+            const allExpandedContents = document.querySelectorAll('.company-card-expanded');
+            
+            // Close all other cards
+            allExpandedContents.forEach(content => {
+                if (content !== expandedContent && content.classList.contains('active')) {
+                    content.classList.remove('active');
+                }
+            });
+
+            // Toggle clicked card
+            expandedContent.classList.toggle('active');
+            
+            // Add animation to the clicked card
+            card.style.transform = 'translateY(-2px)';
+            setTimeout(() => {
+                card.style.transform = 'translateY(0)';
+            }, 200);
+        }
+
+        function loadMore() {
+            const currentPage = new URLSearchParams(window.location.search).get('page') || 1;
+            const nextPage = parseInt(currentPage) + 1;
+            
+            const button = document.getElementById('loadMoreBtn');
+            button.textContent = 'Loading...';
+            button.disabled = true;
+
+            // Add page parameter to current URL
+            const url = new URL(window.location.href);
+            url.searchParams.set('page', nextPage);
+
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('companiesTableBody').insertAdjacentHTML('beforeend', data.html);
+                
+                // Re-apply styling to new rows
+                const newRows = document.querySelectorAll('.table-row');
+                newRows.forEach(row => {
+                    const websiteButton = row.querySelector('a.text-xs');
+                    if (websiteButton) {
+                        websiteButton.className = 'text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-1 rounded transition-colors duration-200';
+                    }
+                });
+                
+                if (!data.has_next) {
+                    button.style.display = 'none';
+                } else {
+                    button.textContent = 'Load More';
+                    button.disabled = false;
+                }
+
+                // Update URL without refreshing
+                window.history.pushState({}, '', url);
+            });
+        }
+
+        function showLoginPopup(url, e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            document.getElementById('nextUrl').value = url;
+            document.getElementById('loginPopup').style.display = 'block';
+        }
+
+        // Close popup when clicking outside
+        document.getElementById('loginPopup').addEventListener('click', function(event) {
+            if (event.target === this) {
+                this.style.display = 'none';
+            }
+        });
+
+        // Modify company links to show popup for non-authenticated users
+        document.addEventListener('DOMContentLoaded', function() {
+            {% if not user.is_authenticated %}
+                const websiteButtons = document.querySelectorAll('a[href^="http"]');
+                websiteButtons.forEach(button => {
+                    const url = button.getAttribute('href');
+                    button.setAttribute('onclick', `showLoginPopup('${url}', event); return false;`);
+                    button.removeAttribute('href');
+                });
+            {% endif %}
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,1122 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="{% static 'job_app/logo.png' %}">
+    <title>
+        {% if request.GET.list_id %}
+            {% for list in job_lists %}
+                {% if request.GET.list_id == list.id|stringformat:"s" %}
+                    {{ list.description }} - Pages
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            List of Jobs - Pages
+        {% endif %}
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: white;
+            font-weight: 400;
+        }
+        .nav-link {
+            color: #64748b;
+            font-weight: 400;
+            padding: 0.425rem 0.85rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+            font-size: 0.80rem;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #0f172a;
+            background-color: #f8fafc;
+        }
+        .site-name {
+            color: #64748b;
+            font-weight: 400;
+            font-size: 0.875rem;
+        }
+        .table-header {
+            color: #0f172a;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            background-color: #f8fafc;
+        }
+        .table-row {
+            transition: all 0.2s;
+            cursor: pointer;
+            background-color: white;
+            font-weight: 400;
+        }
+        .table-row:hover {
+            background-color: #f8fafc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .table-row:nth-child(4n+2), .table-row:nth-child(4n+3) {
+            background-color: #f8fafc;
+        }
+        .filter-input {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.375rem;
+            padding: 0.625rem 1rem;
+            font-size: 0.80rem;
+            /* width: 100%; */
+            background-color: white;
+            font-weight: 500;
+            color: #64748b;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        .filter-input:hover {
+            border-color: #cbd5e1;
+        }
+        .filter-input:focus {
+            border-color: #cbd5e1;
+            outline: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .filter-input::placeholder {
+            color: #94a3b8;
+            font-weight: 400;
+        }
+        .filter-group {
+            position: relative;
+            max-width: 180px;
+        }
+        /* .filter-button {
+            background-color: #f8fafc;
+            color: #64748b;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-size: 0.80rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            border-radius: 0.375rem;
+        } */
+        /* .filter-button:hover {
+            background-color: #f1f5f9;
+        } */
+        /* .filter-button svg {
+            width: 1rem;
+            height: 1rem;
+            margin-left: 0.5rem;
+            stroke-width: 2;
+        } */
+        .filter-button {
+            color: rgb(180, 180, 180);
+        }
+        .filter-button.active {
+            color: black;
+        }
+        .filter-content {
+            position: absolute;
+            width: 100%;
+            z-index: 10;
+            background-color: white;
+            border-radius: 0.375rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .apply-button {
+            background-color: #f8fafc;
+            color: #64748b;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s;
+            border: none;
+            font-size: 0.80rem;
+            min-width: 8rem;
+            margin-left: 0.5rem;
+        }
+        .apply-button:hover {
+            background-color: #f1f5f9;
+        }
+        .description-row {
+            display: none;
+            background-color: white;
+            transition: all 0.3s ease-in-out;
+            max-height: 0;
+            overflow: hidden;
+        }
+        .description-row.active {
+            display: table-row;
+            max-height: 500px;
+        }
+        .description-cell {
+            padding: 1rem 1.5rem;
+            background-color: #fafafa;
+            border-top: 1px solid #e5e7eb;
+            animation: slideDown 0.3s ease-out forwards;
+        }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .filter-dropdown {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        .filter-dropdown .filter-input {
+            background-color: #f8fafc;
+            color: #0f172a;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.375rem;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+            min-width: 16rem;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3e%3c/svg%3e");
+            background-position: right 1rem center;
+            background-repeat: no-repeat;
+            background-size: 1rem 1rem;
+            padding-right: 2.5rem;
+        }
+        .filter-dropdown .filter-input:hover {
+            background-color: #f1f5f9;
+        }
+        .clear-button {
+            background-color: #f8fafc;
+            color: #64748b;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s;
+            border: none;
+            font-size: 0.80rem;
+            min-width: 8rem;
+        }
+        .clear-button:hover {
+            background-color: #f1f5f9;
+        }
+        #loadMoreBtn {
+            background-color: #f8fafc;
+            color: #64748b;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s;
+            border: none;
+            font-size: 0.80rem;
+            min-width: 16rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #loadMoreBtn:hover {
+            background-color: #f1f5f9;
+        }
+        #loadMoreBtn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 50;
+            backdrop-filter: blur(4px);
+        }
+
+        .popup-content {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            max-width: 24rem;
+            width: 90%;
+            z-index: 51;
+        }
+
+        @media (max-width: 768px) {
+            .popup-content {
+                width: 80%;
+                padding: 1rem;
+                max-height: 80vh;
+                overflow-y: auto;
+                margin: 0.75rem;
+                top: 45%;
+            }
+            .popup-overlay {
+                padding: 0.75rem;
+            }
+            .job-card-action {
+                margin-left: 1rem;
+                display: flex;
+                align-items: center;
+                flex-shrink: 0;
+            }
+            .job-card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 0.5rem;
+                flex-wrap: nowrap;
+            }
+            .job-card-main {
+                flex: 1;
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .job-card-title {
+                white-space: normal;
+                word-break: break-word;
+            }
+            .job-card-info {
+                white-space: normal;
+                word-break: break-word;
+            }
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #E5E7EB;
+            border-radius: 0.375rem;
+            background-color: #F9FAFB;
+            font-size: 0.75rem;
+            line-height: 1rem;
+            color: #374151;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #94a3b8;
+        }
+
+        .btn-signin {
+            background-color: #0f172a;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+            padding: 0.6rem 1rem;
+        }
+
+        .btn-signin:hover {
+            background-color: #1e293b;
+            transform: scale(1.02);
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 4px 8px;
+            background-color: #1f2937;
+            color: white;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            z-index: 20;
+        }
+        .tooltip:hover::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 4px;
+            border-style: solid;
+            border-color: #1f2937 transparent transparent transparent;
+        }
+
+        /* Mobile view styles */
+        @media (max-width: 768px) {
+            .mobile-hidden {
+                display: none;
+            }
+            .mobile-full-width {
+                width: 100%;
+            }
+            /* .table-view {
+                display: none;
+            } */
+            /* .card-view {
+                display: block;
+                padding: 0.5rem;
+                width: 95%;
+                margin: 0 auto;
+                padding-left: 0;
+            } */
+             .card-view {
+                display: none;
+             }
+            .job-card {
+                background: white;
+                border-radius: 0.5rem;
+                padding: 1.25rem;
+                margin-bottom: 1rem;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                cursor: pointer;
+                transition: all 0.2s;
+                width: 100%;
+            }
+            /* Filter styles for mobile */
+            #filterForm {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 0.75rem !important;
+                padding: 0 0.5rem;
+                padding-left: 0;
+                margin-left: 0;
+            }
+            .filter-group {
+                max-width: 180px;
+                /* width: 100%; */
+            }
+            .filter-button {
+                width: 100%;
+                font-size: 0.75rem;
+                padding: 0.4rem 0.75rem;
+            }
+            .filter-content {
+                width: 100%;
+            }
+            .filter-input {
+                font-size: 0.75rem;
+                padding: 0.4rem 0.75rem;
+            }
+            /* Action buttons container */
+            .filter-actions {
+                grid-column: span 2;
+                display: flex;
+                justify-content: center;
+                gap: 0.5rem;
+                margin-top: 0.5rem;
+            }
+            .clear-button,
+            .apply-button {
+                min-width: auto;
+                flex: 1;
+                margin: 0;
+                font-size: 0.75rem;
+                padding: 0.4rem 0.75rem;
+                text-align: center;
+            }
+            .job-card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 0.5rem;
+            }
+            .job-card-main {
+                flex: 1;
+            }
+            .job-card-action {
+                margin-left: 1rem;
+                display: flex;
+                align-items: center;
+            }
+            .job-card-action a, 
+            .apply-button {
+                white-space: nowrap;
+                display: inline-flex;
+                align-items: center;
+                padding: 0.5rem 1rem;
+                min-width: auto;
+                width: auto;
+            }
+            .job-card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .job-card-main {
+                flex: 1;
+                min-width: 0;
+            }
+            .job-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+            .job-card-title {
+                font-size: 1rem;
+                font-weight: 500;
+                color: #0f172a;
+                margin-bottom: 0.5rem;
+            }
+            .job-card-company, .job-card-location {
+                font-size: 0.875rem;
+                color: #64748b;
+                margin-bottom: 0.25rem;
+            }
+            .job-card-expanded {
+                display: none;
+                padding-top: 1rem;
+                margin-top: 1rem;
+                border-top: 1px solid #e5e7eb;
+            }
+            .job-card-expanded.active {
+                display: block;
+            }
+            .job-card-section {
+                margin-bottom: 1rem;
+            }
+            .job-card-section-title {
+                font-weight: 500;
+                color: #0f172a;
+                margin-bottom: 0.5rem;
+            }
+        }
+        @media (min-width: 769px) {
+            .table-view {
+                display: block;
+            }
+            .card-view {
+                display: none;
+            }
+        }
+        .bg-white.rounded-lg.py-6.pr-6.mb-8.ml-0 {
+            margin-left: 0;
+            padding-left: 0;
+        }
+
+        #filterForm {
+            padding-left: 0;
+            margin-left: 0;
+        }
+
+        .filter-actions {
+            margin-left: 0;
+            padding-left: 0;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .header-nav {
+                gap: 0.75rem;
+                padding: 0 0.5rem;
+            }
+            .nav-link {
+                font-size: 0.875rem;
+                padding: 0.5rem 0.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center space-x-6">
+                    <span class="site-name">Pages</span>
+                    <div class="flex items-center space-x-4">
+                        <a href="{% url 'companies' %}" class="nav-link">Companies</a>
+                        <a href="{% url 'jobs' %}" class="nav-link active">Jobs</a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="nav-link">Login</a>
+                        <a href="{% url 'register' %}" class="nav-link">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+<!-- Sticky Menu Button (Mobile Only) -->
+<div class="fixed bottom-4 left-4 z-50 sm:hidden">
+    <button id="openDrawer" class="bg-white text-gray-600 p-3 rounded-full shadow-lg hover:bg-gray-100 transition">
+        <!-- Heroicons Menu Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7"/>
+        </svg>
+    </button>
+</div>
+
+<!-- Side Drawer (Initially Hidden) -->
+<div id="filterDrawer" class="fixed inset-0 bg-black bg-opacity-50 hidden sm:hidden">
+    <div class="fixed top-0 left-0 h-full w-64 bg-white shadow-lg transform -translate-x-full transition-transform duration-300" id="drawerMenu">
+        <!-- Drawer Header -->
+        <div class="p-4 flex justify-between items-center border-b">
+            <h2 class="text-lg font-semibold">Filters</h2>
+            <button id="closeDrawer" class="text-gray-500 hover:text-gray-800">
+                <!-- Close (X) Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Job Filters -->
+    <div class="p-4">
+        <form id="filterForm">
+            <div class="filter-group">
+                <button type="button" class="filter-button w-full flex justify-between items-center px-2 py-2 rounded-md">
+                    <span class="font-light text-base">Title</span>
+                    <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="filter-content hidden mt-2">
+                    <input type="text" name="title" value="{{ job_filters.title }}" class="filter-input w-full border px-2 py-1 rounded" placeholder="e.g. Software Engineer">
+                </div>
+            </div>
+
+            <!-- More Filters -->
+            <div class="filter-group mt-4">
+                <button type="button" class="filter-button w-full flex justify-between items-center px-2 py-2 rounded-md">
+                    <span class="font-light text-base">Company</span>
+                    <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="filter-content hidden mt-2">
+                    <input type="text" name="company" value="{{ job_filters.company }}" class="filter-input w-full border px-2 py-1 rounded" placeholder="e.g. Stripe">
+                </div>
+            </div>
+
+            <!-- Apply & Clear Filters -->
+            <div class="mt-4 flex justify-between">
+                <button type="button" onclick="clearFilters()" class="border border-gray-300 text-gray-400 text-xs px-4 py-2 rounded opacity-50">Clear Filters</button>
+                <button type="button" onclick="applyFilters()" class="bg-gray-300 text-gray-500 text-xs px-4 py-2 rounded opacity-50">Apply Filters</button>
+            </div>
+        </form>
+    </div>
+    </div>
+</div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- <h1 class="text-gray-500" style="font-size: 0.80rem;">
+            {% if request.GET.list_id %}
+                {% for list in job_lists %}
+                    {% if request.GET.list_id == list.id|stringformat:"s" %}
+                        <span class="text-gray-900 font-medium">{{ list.description }}</span>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <span class="text-gray-900 font-light text-base">Filters</span>
+            {% endif %}
+        </h1> -->
+
+        <!-- Job Filters -->
+        <div class="bg-white rounded-lg py-6 pr-6 mb-8 ml-0 hidden md:block">
+            <form method="GET" class="flex flex-row" id="filterForm" onsubmit="return false;">
+                <div class="filter-group">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-base">Title</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="text" name="title" value="{{ job_filters.title }}" class="filter-input" placeholder="e.g. Software Engineer">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-base">Company</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="text" name="company" value="{{ job_filters.company }}" class="filter-input" placeholder="e.g. Stripe">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-xbases">Location</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="text" name="location" value="{{ job_filters.location }}" class="filter-input" placeholder="e.g. New York City">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-base">Salary ($K)</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="number" name="min_salary" value="{{ job_filters.min_salary }}" class="filter-input mb-2" placeholder="Min Salary">
+                        <input type="number" name="max_salary" value="{{ job_filters.max_salary }}" class="filter-input" placeholder="Max Salary">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-base">Years of Experience</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="number" name="min_years_experience" value="{{ job_filters.min_years_experience }}" class="filter-input mb-2" placeholder="Min Years">
+                        <input type="number" name="max_years_experience" value="{{ job_filters.max_years_experience }}" class="filter-input" placeholder="Max Years">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-base">Level</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="text" name="level" value="{{ job_filters.level }}" class="filter-input" placeholder="e.g. Junior">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-base">Skills</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="text" name="skills" value="{{ job_filters.skills }}" class="filter-input" placeholder="e.g. Python">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2  rounded-md">
+                        <span class="font-light text-base">Description</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="text" name="description" value="{{ job_filters.description }}" class="filter-input" placeholder="e.g. Commodities">
+                    </div>
+                </div>
+            </form>
+
+            <div class="mt-4 ml-[0.75rem] filter-actions">
+                <button type="button" onclick="clearFilters()" class="border border-gray-300 text-gray-400 text-xs px-2 py-2 rounded-lg opacity-50">Clear Filters</button>
+                <button type="button" onclick="applyFilters()" class="bg-gray-300 text-gray-500 text-xs px-2 py-2 rounded-lg opacity-50">Apply Filters</button>
+            </div>
+        </div>
+
+        <!-- Job Lists Section -->
+        <div class="bg-white rounded-lg py-6 pr-6 mb-8 ml-0">
+            <form method="GET" class="w-full" id="listForm">
+                {% for key, value in request.GET.items %}
+                    {% if key != 'list_id' and key != 'page' %}
+                        <input type="hidden" name="{{ key }}" value="{{ value }}">
+                    {% endif %}
+                {% endfor %}
+                <div class=" max-w-md">
+                    <select name="list_id" class="font-light" onchange="document.getElementById('listForm').submit()">
+                        <option class="" value="">List of Jobs</option>
+                        {% for list in job_lists %}
+                            <option value="{{ list.id }}" {% if request.GET.list_id == list.id|stringformat:"s" %}selected{% endif %}>
+                                {{ list.description }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+            </form>
+        </div>
+
+        <!-- Jobs Table -->
+        <div class="table-view bg-white rounded-lg overflow-hidden ml-[1.5rem]">
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead class="bg-white">
+                        <tr>
+                            <!-- Mobile-->
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm md:hidden"></th>
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm md:hidden">Position</th>
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm md:hidden">Posted</th>
+
+                            <!-- Desktop / Tab-->
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Company</th>
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Title</th>
+                            <!-- <th class="px-6 py-3 text-left text-gray-400 font-light text-sm">Location</th> -->
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Years of Experience</th>
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Level</th>
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Skills</th>
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Salary</th>
+                        </tr>
+                    </thead>
+                    <tbody id="jobsTableBody">
+                        {% include 'job_app/includes/job_rows.html' %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Mobile Card View -->
+        <div class="card-view">
+            {% for job in jobs %}
+            <div class="job-card">
+                <div class="job-card-content" onclick="toggleJobCard(this.parentElement)">
+                    <div class="job-card-title">{{ job.title }}</div>
+                    <div class="job-card-info">
+                        <div><span class="text-gray-600">Company:</span> {{ job.company_name|default:"-" }}</div>
+                        <div><span class="text-gray-600">Location:</span> {{ job.location|default:"-" }}</div>
+                    </div>
+                    {% if job.url %}
+                        <div class="job-card-action mt-4">
+                            <a class="apply-button w-full text-center justify-center" onclick="showLoginPopup('{{ job.url }}', event)">Apply Now</a>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="job-card-expanded">
+                    <div class="job-card-section">
+                        <div class="job-card-section-title">Description</div>
+                        <div class="text-sm text-gray-600">
+                            {{ job.description|linebreaks|default:"No description available." }}
+                        </div>
+                    </div>
+                    <div class="job-card-section">
+                        <div class="job-card-section-title">Details</div>
+                        <div class="text-sm space-y-2">
+                            <div><span class="text-gray-600">Experience:</span> {{ job.min_years_experience|default:"-" }} years</div>
+                            <div><span class="text-gray-600">Level:</span> {{ job.level|default:"-" }}</div>
+                            <div><span class="text-gray-600">Skills:</span> {{ job.skills|default:"-" }}</div>
+                            <div><span class="text-gray-600">Salary:</span> 
+                                {% if job.min_salary and job.max_salary %}
+                                    ${{ job.min_salary|floatformat:0|intcomma }} - ${{ job.max_salary|floatformat:0|intcomma }}
+                                {% elif job.min_salary %}
+                                    ${{ job.min_salary|floatformat:0|intcomma }}+
+                                {% elif job.max_salary %}
+                                    Up to ${{ job.max_salary|floatformat:0|intcomma }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center text-gray-500 py-4">No jobs found</div>
+            {% endfor %}
+        </div>
+
+        {% if jobs.has_next %}
+            <div class="flex justify-center py-4">
+                <button id="loadMoreBtn" class="apply-button" onclick="loadMore()">
+                    Load More
+                </button>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Login Popup -->
+    <div id="loginPopup" class="popup-overlay">
+        <div class="popup-content">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl text-gray-900 mb-1">Welcome</h2>
+                <p class="text-sm text-gray-600">Login to Visit Links</p>
+            </div>
+            <form action="{% url 'login' %}" method="POST" class="space-y-4">
+                {% csrf_token %}
+                <input type="hidden" name="next" id="nextUrl">
+                <div>
+                    <label for="popup-username" class="block text-sm text-gray-700 mb-1">Email</label>
+                    <input id="popup-username" name="username" type="email" required 
+                           class="input-field" placeholder="jane.doe@school.edu">
+                </div>
+                <div>
+                    <label for="popup-password" class="block text-sm text-gray-700 mb-1">Password</label>
+                    <input id="popup-password" name="password" type="password" required 
+                           class="input-field" placeholder="••••••••••">
+                </div>
+                <div class="mt-4">
+                    <button type="submit" class="btn-signin w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm text-white">
+                        Sign in
+                    </button>
+                </div>
+            </form>
+            <div class="text-center mt-4">
+                <p class="text-xs text-gray-600">
+                    Don't have an account? 
+                    <a href="{% url 'register' %}" class="font-medium text-gray-900 hover:text-gray-700">
+                        Register here
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function clearFilters() {
+            const form = document.getElementById('filterForm');
+            const inputs = form.querySelectorAll('input');
+            inputs.forEach(input => {
+                if (input.type === 'text' || input.type === 'number') {
+                    input.value = '';
+                }
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.filter-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Get the current list_id from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const listId = urlParams.get('list_id');
+            
+            // Clear the form and submit
+            form.submit();
+            
+            // If there was a list_id, redirect to preserve it
+            if (listId) {
+                window.location.href = '?list_id=' + listId;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterButtons = document.querySelectorAll('.filter-button');
+            
+            filterButtons.forEach(button => {
+                const input = button.nextElementSibling.querySelector('input');
+                if (input.value) {
+                    button.classList.add('active');
+                }
+                
+                button.addEventListener('click', function() {
+                    const content = this.nextElementSibling;
+                    const wasHidden = content.classList.contains('hidden');
+                    
+                    // Hide all filter contents
+                    document.querySelectorAll('.filter-content').forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    
+                    // Remove active class from all buttons
+                    document.querySelectorAll('.filter-button').forEach(btn => {
+                        if (!btn.nextElementSibling.querySelector('input').value) {
+                            btn.classList.remove('active');
+                        }
+                    });
+                    
+                    if (wasHidden) {
+                        content.classList.remove('hidden');
+                        this.classList.add('active');
+                    }
+                });
+            });
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.filter-group')) {
+                    document.querySelectorAll('.filter-content').forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    document.querySelectorAll('.filter-button').forEach(btn => {
+                        if (!btn.nextElementSibling.querySelector('input').value) {
+                            btn.classList.remove('active');
+                        }
+                    });
+                }
+            });
+
+            document.getElementById("openDrawer").addEventListener("click", function() {
+                const filterDrawer = document.getElementById("filterDrawer");
+                const drawerMenu = document.getElementById("drawerMenu");
+
+                if (filterDrawer.classList.contains("hidden")) {
+                    filterDrawer.classList.remove("hidden"); // Open drawer
+                    drawerMenu.classList.remove("-translate-x-full");
+                } else {
+                    filterDrawer.classList.add("hidden"); // Close drawer
+                    drawerMenu.classList.add("-translate-x-full");
+                }
+            });
+
+            document.getElementById("closeDrawer").addEventListener("click", function() {
+                document.getElementById("drawerMenu").classList.add("-translate-x-full");
+                setTimeout(() => {
+                    document.getElementById("filterDrawer").classList.add("hidden");
+                }, 300);
+            });
+        });
+
+        function toggleJobDescription(row, descriptionId) {
+            const descriptionRow = document.getElementById(descriptionId);
+            const allDescriptionRows = document.querySelectorAll('.description-row');
+            
+            // Close all other description rows
+            allDescriptionRows.forEach(dr => {
+                if (dr.id !== descriptionId && dr.classList.contains('active')) {
+                    dr.classList.remove('active');
+                    dr.style.display = 'none';
+                }
+            });
+
+            // Toggle clicked description row
+            if (descriptionRow.classList.contains('active')) {
+                descriptionRow.classList.remove('active');
+                descriptionRow.style.display = 'none';
+            } else {
+                descriptionRow.classList.add('active');
+                descriptionRow.style.display = 'table-row';
+            }
+            
+            // Add animation to the clicked row
+            row.style.transform = 'translateY(-2px)';
+            setTimeout(() => {
+                row.style.transform = 'translateY(0)';
+            }, 200);
+        }
+
+        function loadMore() {
+            const currentPage = new URLSearchParams(window.location.search).get('page') || 1;
+            const nextPage = parseInt(currentPage) + 1;
+            
+            const button = document.getElementById('loadMoreBtn');
+            button.textContent = 'Loading...';
+            button.disabled = true;
+
+            // Add page parameter to current URL
+            const url = new URL(window.location.href);
+            url.searchParams.set('page', nextPage);
+
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('jobsTableBody').insertAdjacentHTML('beforeend', data.html);
+                
+                // Re-apply styling to new rows
+                const newRows = document.querySelectorAll('.table-row');
+                newRows.forEach(row => {
+                    const applyButton = row.querySelector('a.text-xs');
+                    if (applyButton) {
+                        applyButton.className = 'text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-1 rounded transition-colors duration-200';
+                    }
+                });
+                
+                if (!data.has_next) {
+                    button.style.display = 'none';
+                } else {
+                    button.textContent = 'Load More';
+                    button.disabled = false;
+                }
+
+                // Update URL without refreshing
+                window.history.pushState({}, '', url);
+            });
+        }
+
+        function applyFilters() {
+            const form = document.getElementById('filterForm');
+            
+            // Get the current list_id from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const listId = urlParams.get('list_id');
+            
+            // Add list_id to the form if it exists
+            if (listId) {
+                const listIdInput = document.createElement('input');
+                listIdInput.type = 'hidden';
+                listIdInput.name = 'list_id';
+                listIdInput.value = listId;
+                form.appendChild(listIdInput);
+            }
+            
+            form.submit();
+        }
+
+        function showLoginPopup(url, e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            document.getElementById('nextUrl').value = url;
+            document.getElementById('loginPopup').style.display = 'block';
+        }
+
+        // Close popup when clicking outside
+        document.getElementById('loginPopup').addEventListener('click', function(event) {
+            if (event.target === this) {
+                this.style.display = 'none';
+            }
+        });
+
+        // Modify job links to show popup for non-authenticated users
+        document.addEventListener('DOMContentLoaded', function() {
+            {% if not user.is_authenticated %}
+                const applyButtons = document.querySelectorAll('a[href^="http"]');
+                applyButtons.forEach(button => {
+                    const url = button.getAttribute('href');
+                    button.setAttribute('onclick', `showLoginPopup('${url}', event); return false;`);
+                    button.removeAttribute('href');
+                });
+            {% endif %}
+        });
+
+        // Add this new function for mobile card toggle
+        function toggleJobCard(card) {
+            const expandedContent = card.querySelector('.job-card-expanded');
+            const allExpandedContents = document.querySelectorAll('.job-card-expanded');
+            
+            // Close all other cards
+            allExpandedContents.forEach(content => {
+                if (content !== expandedContent && content.classList.contains('active')) {
+                    content.classList.remove('active');
+                }
+            });
+
+            // Toggle clicked card
+            expandedContent.classList.toggle('active');
+            
+            // Add animation to the clicked card
+            card.style.transform = 'translateY(-2px)';
+            setTimeout(() => {
+                card.style.transform = 'translateY(0)';
+            }, 200);
+        }
+    </script>
+</body>
+</html> 

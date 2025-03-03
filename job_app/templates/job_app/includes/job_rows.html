@@ -1,0 +1,185 @@
+{% load humanize %}
+{% for job in jobs %}
+<tr class="border-b border-gray-150 cursor-pointer" onclick="toggleJobDescription(this, 'job-{{ job.id }}')">
+    <!-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+        {{ job.title|truncatechars:30 }}
+        {% if job.url %}
+            <div class="mt-1">
+                <a href="{{ job.url }}" target="_blank" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-1 rounded transition-colors duration-200" onclick="event.stopPropagation()">Apply Now</a>
+            </div>
+        {% endif %}
+    </td> -->
+
+    <!-- Mobile -->
+    <td class="px-2 py-4 md:px-6 whitespace-nowrap text-sm font-light flex items-center space-x-3 md:hidden">
+        <img src="{{ job.company_logo|default:'https://res.cloudinary.com/read-cv/image/upload/c_fill,h_40,w_40/dpr_1.0/v1/1/teams/pZb0dT556KYtJvcNW8mt/profilePhoto-d0711805-831a-4f67-b81d-9b982a9b25ef.png?_a=DATAdtAAZAA0' }}" 
+             alt="{{ job.company_name }}" 
+             class="w-8 h-8 rounded-full object-cover" />
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light md:hidden">
+        <div class="underline">{{ job.title|truncatechars:30 }}</div>
+        <div class="font-light text-sm text-gray-400 my-2">{{ job.company_name|truncatechars:30|default:"-" }}</div>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light md:hidden">{{ job.created_at|default:"-" }}</td>
+
+    <!-- Desktop / Tab -->
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light flex items-center space-x-3 mobile-hidden">
+        <img src="{{ job.company_logo|default:'https://res.cloudinary.com/read-cv/image/upload/c_fill,h_40,w_40/dpr_1.0/v1/1/teams/pZb0dT556KYtJvcNW8mt/profilePhoto-d0711805-831a-4f67-b81d-9b982a9b25ef.png?_a=DATAdtAAZAA0' }}" 
+             alt="{{ job.company_name }}" 
+             class="w-8 h-8 rounded-full object-cover" />
+        <span>{{ job.company_name|truncatechars:30|default:"-" }}</span>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light mobile-hidden">
+        <div class="underline">{{ job.title|truncatechars:30 }}</div>
+        <div class="font-light text-sm text-gray-400 my-2">{{ job.location|truncatechars:30|default:"-" }}</div>
+    </td>
+    <!-- <td class="px-6 py-4 whitespace-nowrap text-sm font-light">{{ job.location|truncatechars:30|default:"-" }}</td> -->
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light mobile-hidden">
+        {% if job.min_years_of_experience or job.max_years_of_experience %}
+            {% if job.min_years_of_experience and job.max_years_of_experience %}
+                {{ job.min_years_of_experience }}-{{ job.max_years_of_experience }}
+            {% elif job.min_years_of_experience %}
+                {{ job.min_years_of_experience }}+
+            {% else %}
+                0-{{ job.max_years_of_experience }}
+            {% endif %}
+        {% else %}
+            -
+        {% endif %}
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light mobile-hidden">{{ job.level|default:"-" }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light mobile-hidden">{{ job.skills|truncatechars:30|default:"-" }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light mobile-hidden">
+        {% if job.min_salary and job.max_salary %}
+            ${{ job.min_salary|floatformat:0|intcomma }} - ${{ job.max_salary|floatformat:0|intcomma }}
+        {% elif job.min_salary %}
+            ${{ job.min_salary|floatformat:0|intcomma }}+
+        {% elif job.max_salary %}
+            Up to ${{ job.max_salary|floatformat:0|intcomma }}
+        {% else %}
+            -
+        {% endif %}
+    </td>
+</tr>
+<tr id="job-{{ job.id }}" class="description-row">
+    <td colspan="8" class="pb-4">
+        <div class="text-sm text-gray-600 pl-4 max-w-5xl">
+            <!-- Title and Apply Button - Full Width -->
+            <div class="mb-4">
+                <!-- <div class="text-xl font-normal text-gray-900">{{ job.title }}</div>
+                {% if job.url %}
+                <a href="{{ job.url }}" target="_blank" 
+                class="cursor-pointer bg-black text-white text-xs px-2 py-2 my-2 rounded-full inline-block hover:bg-gray-900 transition" 
+                onclick="event.stopPropagation()">Apply Now →</a>
+                {% endif %} -->
+                
+                
+            </div>
+
+            <!-- Two Column Layout -->
+            <div class="grid grid-cols-1 md:grid-cols-1 gap-x-6 gap-y-3 pr-4">
+                <!-- Left Column -->
+                <div class="space-y-3">
+                    <!-- Company and Location -->
+                    <div>
+                        <!-- <div class="font-light text-gray-500 mb-1">Company Information</div> -->
+                        <div class="space-y-1">
+                            <div>
+                                <div class="font-light text-gray-500 mb-1">Company:</div>
+                                <div class="space-y-1">
+                                    {{ job.company_name|default:"Not specified" }}
+                                </div>
+                            </div>
+                            <div>
+                                <div class="font-light text-gray-500 mb-1">Location:</div>
+                                <div class="space-y-1">
+                                    {{ job.location|default:"Not specified" }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Experience and Level -->
+                    <div>
+                        <!-- <div class="font-light text-gray-500 mb-1">Position Details</div> -->
+                        <div class="space-y-1">
+                            <div>
+                                <div class="font-light text-gray-500 mb-1">Experience Required:</div>
+                                <div class="space-y-1">
+                                    {% if job.min_years_of_experience or job.max_years_of_experience %}
+                                    {% if job.min_years_of_experience and job.max_years_of_experience %}
+                                        {{ job.min_years_of_experience }}-{{ job.max_years_of_experience }}
+                                    {% elif job.min_years_of_experience %}
+                                        {{ job.min_years_of_experience }}+
+                                    {% else %}
+                                        0-{{ job.max_years_of_experience }}
+                                    {% endif %}
+                                {% else %}
+                                    Not specified
+                                {% endif %}
+                                </div>
+                                
+                            </div>
+                            <div>
+                                <div class="font-light text-gray-500 mb-1">Level:</div>
+                                <div class="space-y-1">
+                                    {{ job.level|default:"Not specified" }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="space-y-3">
+                    <!-- Skills -->
+                    <div>
+                        <div class="font-light text-gray-500 mb-1">Required Skills</div>
+                        <div class="space-y-1">
+                            {{ job.skills|default:"Not specified" }}
+                        </div>
+                    </div>
+
+                    <!-- Salary -->
+                    <div>
+                        <div class="font-light text-gray-500 mb-1">Compensation</div>
+                        <div class="space-y-1">
+                            {% if job.min_salary and job.max_salary %}
+                                ${{ job.min_salary|floatformat:0|intcomma }} - ${{ job.max_salary|floatformat:0|intcomma }}
+                            {% elif job.min_salary %}
+                                ${{ job.min_salary|floatformat:0|intcomma }}+
+                            {% elif job.max_salary %}
+                                Up to ${{ job.max_salary|floatformat:0|intcomma }}
+                            {% else %}
+                                Not specified
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-3">
+                <div class="font-light text-gray-500 mb-1">Description</div>
+                <div class="my-2">
+
+                    {% if job.description %}
+                        {{ job.description|linebreaks }}
+                    {% else %}
+                        No description available.
+                    {% endif %}
+                </div>
+            </div>
+            <div class="mt-3">
+                <div class="font-light text-gray-500 mb-1">Posted on: </div>
+                <div class="my-2">
+
+                    {% if job.created_at %}
+                        {{ job.created_at }}
+                    {% else %}
+                        No time information
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </td>
+</tr>
+{% endfor %} 

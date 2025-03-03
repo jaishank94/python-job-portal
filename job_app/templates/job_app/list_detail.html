@@ -1,0 +1,726 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ list.description }} | Pages</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: white;
+            font-weight: 400;
+        }
+        .nav-link {
+            color: #64748b;
+            font-weight: 400;
+            padding: 0.425rem 0.85rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+            font-size: 0.80rem;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #0f172a;
+            background-color: #f8fafc;
+        }
+        .site-name {
+            color: #64748b;
+            font-weight: 400;
+            font-size: 0.875rem;
+        }
+        .table-header {
+            color: #64748b;
+            font-weight: 400;
+            font-size: 0.813rem;
+            letter-spacing: 0.05em;
+        }
+        .table-row {
+            transition: all 0.2s;
+            cursor: pointer;
+            background-color: white;
+            font-weight: 400;
+        }
+        .table-row:hover {
+            background-color: #f8fafc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .table-row:nth-child(even) {
+            background-color: #fafafa;
+        }
+        .filter-input {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.375rem;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.813rem;
+            width: 100%;
+            min-width: 160px;
+            background-color: white;
+            font-weight: 400;
+            color: #64748b;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+        }
+        .filter-input:focus {
+            outline: none;
+            background-color: white;
+        }
+        .apply-button {
+            color: white;
+            background-color: #0f172a;
+            font-weight: 400;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .apply-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .url-link {
+            color: #64748b;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-weight: 400;
+        }
+        .url-link:hover {
+            color: #0f172a;
+            text-decoration: none;
+        }
+        .tag {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 400;
+            border-radius: 9999px;
+            background-color: #f1f5f9;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+        .tag:hover {
+            background-color: #e2e8f0;
+            color: #0f172a;
+        }
+        .description-row {
+            display: none;
+            background-color: white;
+            transition: all 0.3s ease-in-out;
+            max-height: 0;
+            overflow: hidden;
+        }
+        .description-row.active {
+            display: table-row;
+            max-height: 500px;
+        }
+        .description-cell {
+            padding: 1rem 1.5rem;
+            background-color: #fafafa;
+            border-top: 1px solid #e5e7eb;
+            animation: slideDown 0.3s ease-out forwards;
+        }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .filter-dropdown {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        .filter-button {
+            width: 100%;
+            text-align: left;
+            padding: 0.5rem 0.75rem;
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.375rem;
+            font-size: 0.813rem;
+            color: #64748b;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-width: 180px;
+        }
+        .filter-button:hover {
+            background-color: #f8fafc;
+        }
+        .filter-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            width: 100%;
+            min-width: 180px;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.375rem;
+            margin-top: 0.25rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            padding: 0.5rem;
+        }
+        .filter-content.show {
+            display: block;
+        }
+        .chevron {
+            transition: transform 0.2s;
+        }
+        .chevron.rotate {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center space-x-6">
+                    <span class="site-name">Pages</span>
+                    <div class="flex items-center space-x-4">
+                        <a href="{% url 'jobs' %}" class="nav-link {% if not list.type == 'COMPANY' %}active{% endif %}">Jobs</a>
+                        <a href="{% url 'companies' %}" class="nav-link {% if list.type == 'COMPANY' %}active{% endif %}">Companies</a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="nav-link">Login</a>
+                        <a href="{% url 'register' %}" class="nav-link">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 class="text-3xl text-gray-500 mb-8">{{ list.description }}</h1>
+
+        {% if list.type == 'COMPANY' %}
+        <!-- Company Filters -->
+        <div class="bg-white rounded-lg p-6 mb-8">
+            <form method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4" id="filterForm">
+                <div class="filter-dropdown">
+                    <select name="company_name" class="filter-input" onchange="this.form.submit()">
+                        <option value="">All Companies</option>
+                        {% for name in all_company_names %}
+                            <option value="{{ name }}" {% if company_filters.name == name %}selected{% endif %}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-dropdown">
+                    <button type="button" class="filter-button" onclick="toggleFilter('industry')">
+                        Industry
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="industry" class="filter-content">
+                        <input type="text" name="industry" value="{{ company_filters.industry }}" class="filter-input" placeholder="e.g. Software, AI...">
+                    </div>
+                </div>
+                <div class="filter-dropdown">
+                    <button type="button" class="filter-button" onclick="toggleFilter('fundingStage')">
+                        Funding Stage
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="fundingStage" class="filter-content">
+                        <input type="text" name="funding_stage" value="{{ company_filters.funding_stage }}" class="filter-input" placeholder="e.g. Series A, Seed...">
+                    </div>
+                </div>
+                <div class="filter-dropdown">
+                    <button type="button" class="filter-button" onclick="toggleFilter('foundedDate')">
+                        Founded Date
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="foundedDate" class="filter-content">
+                        <input type="number" name="founded_date" value="{{ company_filters.founded_date }}" class="filter-input" placeholder="Year e.g. 2020">
+                    </div>
+                </div>
+                <div class="filter-dropdown">
+                    <button type="button" class="filter-button" onclick="toggleFilter('lastFundingAmount')">
+                        Last Funding Amount
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="lastFundingAmount" class="filter-content">
+                        <input type="number" name="last_funding_amount" value="{{ company_filters.last_funding_amount }}" class="filter-input" placeholder="Amount in USD">
+                    </div>
+                </div>
+                <div class="filter-dropdown">
+                    <button type="button" class="filter-button" onclick="toggleFilter('totalFundingAmount')">
+                        Total Funding
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="totalFundingAmount" class="filter-content">
+                        <input type="number" name="total_funding_amount" value="{{ company_filters.total_funding_amount }}" class="filter-input" placeholder="Amount in USD">
+                    </div>
+                </div>
+                <div class="filter-dropdown">
+                    <button type="button" class="filter-button" onclick="toggleFilter('founders')">
+                        Founders
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="founders" class="filter-content">
+                        <input type="text" name="founders" value="{{ company_filters.founders }}" class="filter-input" placeholder="Search founders...">
+                    </div>
+                </div>
+                <div class="filter-dropdown">
+                    <button type="button" class="filter-button" onclick="toggleFilter('headquarters')">
+                        Headquarters
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="headquarters" class="filter-content">
+                        <input type="text" name="headquarters" value="{{ company_filters.headquarters }}" class="filter-input" placeholder="City or Country">
+                    </div>
+                </div>
+                <div class="filter-dropdown">
+                    <button type="button" class="filter-button" onclick="toggleFilter('investors')">
+                        Investors
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="investors" class="filter-content">
+                        <input type="text" name="investors" value="{{ company_filters.investors }}" class="filter-input" placeholder="Search investors...">
+                    </div>
+                </div>
+                <div class="filter-dropdown">
+                    <button type="button" class="filter-button" onclick="toggleFilter('description')">
+                        Description
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="description" class="filter-content">
+                        <input type="text" name="description" value="{{ company_filters.description }}" class="filter-input" placeholder="Search in description...">
+                    </div>
+                </div>
+                <div class="filter-dropdown">
+                    <button type="button" class="filter-button" onclick="toggleFilter('minEmployees')">
+                        Min Employees
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="minEmployees" class="filter-content">
+                        <input type="number" name="min_employees" value="{{ company_filters.min_employees }}" class="filter-input" placeholder="Minimum">
+                    </div>
+                </div>
+                <div class="filter-dropdown">
+                    <button type="button" class="filter-button" onclick="toggleFilter('maxEmployees')">
+                        Max Employees
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="maxEmployees" class="filter-content">
+                        <input type="number" name="max_employees" value="{{ company_filters.max_employees }}" class="filter-input" placeholder="Maximum">
+                    </div>
+                </div>
+                <div class="flex items-end">
+                    <button type="submit" class="apply-button">Apply Filters</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Companies Table -->
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+            <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-white">
+                        <tr>
+                            <th class="px-6 py-3 text-left table-header">Name</th>
+                            <th class="px-6 py-3 text-left table-header">Industries</th>
+                            <th class="px-6 py-3 text-left table-header">Last Funding Stage</th>
+                            <th class="px-6 py-3 text-left table-header">Total Funding Amount</th>
+                            <th class="px-6 py-3 text-left table-header">Last Funding Amount</th>
+                            <th class="px-6 py-3 text-left table-header">Last Funding Date</th>
+                            <th class="px-6 py-3 text-left table-header">Founded Date</th>
+                            <th class="px-6 py-3 text-left table-header">Employees</th>
+                            <th class="px-6 py-3 text-left table-header">Headquarters</th>
+                            <th class="px-6 py-3 text-left table-header">Founders</th>
+                            <th class="px-6 py-3 text-left table-header">Investors</th>
+                            <th class="px-6 py-3 text-left table-header">Description</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for company in companies %}
+                        <tr class="table-row" onclick="toggleCompanyDescription(this, 'company-{{ company.id }}')">
+                            <td class="px-6 py-4">
+                                <div class="text-sm text-gray-900">{{ company.name }}</div>
+                                <div class="text-sm text-gray-500">
+                                    {% if company.website %}
+                                        <a href="{{ company.website }}" target="_blank" class="url-link" onclick="event.stopPropagation()">Visit</a>
+                                    {% endif %}
+                                </div>
+                        </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ company.industries|truncatechars:30 }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ company.latest_funding_stage }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {% if company.total_funding_amount %}
+                                    ${{ company.total_funding_amount|floatformat:0 }}M
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {% if company.latest_funding_amount %}
+                                    ${{ company.latest_funding_amount|floatformat:0 }}M
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {% if company.latest_funding_date %}
+                                    {{ company.latest_funding_date|date:"Y-m-d" }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {% if company.founded_date %}
+                                    {{ company.founded_date|date:"Y" }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ company.employees|default:"-" }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ company.hq|truncatechars:30|default:"-" }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ company.founders|truncatechars:30|default:"-" }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ company.investors|truncatechars:30|default:"-" }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ company.description|truncatechars:50|default:"-" }}</td>
+                        </tr>
+                        <tr id="company-{{ company.id }}" class="description-row">
+                            <td colspan="12" class="description-cell">
+                                <div class="text-sm text-gray-600">
+                                    <div class="font-medium text-gray-900 mb-2">Company Description:</div>
+                                    {% if company.description %}
+                                        {{ company.description|linebreaks }}
+                                    {% else %}
+                                        No description available.
+                                    {% endif %}
+                                </div>
+                            </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                            <td colspan="12" class="px-6 py-4 text-center text-sm text-gray-500">No companies found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+            {% if companies.has_next or jobs.has_next %}
+                <div class="flex justify-center py-4">
+                    <button id="loadMoreBtn" class="apply-button" onclick="loadMore()">
+                        Load More
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if list.type == 'JOB' %}
+        <!-- Job Filters -->
+        <div class="bg-white rounded-lg p-6 mb-8">
+            <form method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4" id="filterForm">
+                <div class="filter-dropdown">
+                    <button type="button" class="filter-button" onclick="toggleFilter('jobTitle')">
+                        Job Title
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="jobTitle" class="filter-content">
+                        <input type="text" name="job_title" value="{{ job_filters.title }}" class="filter-input" placeholder="Search job titles...">
+                    </div>
+                </div>
+                <div class="filter-dropdown">
+                    <button type="button" class="filter-button" onclick="toggleFilter('location')">
+                        Location
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="location" class="filter-content">
+                        <input type="text" name="location" value="{{ job_filters.location }}" class="filter-input" placeholder="City or Country">
+                    </div>
+                </div>
+                <div class="filter-dropdown">
+                    <button type="button" class="filter-button" onclick="toggleFilter('level')">
+                        Level
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="level" class="filter-content">
+                        <input type="text" name="level" value="{{ job_filters.level }}" class="filter-input" placeholder="e.g. Senior, Junior...">
+                    </div>
+                </div>
+                <div class="filter-dropdown">
+                    <button type="button" class="filter-button" onclick="toggleFilter('skills')">
+                        Skills
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="skills" class="filter-content">
+                        <input type="text" name="skills" value="{{ job_filters.skills }}" class="filter-input" placeholder="e.g. Python, React...">
+                    </div>
+                </div>
+                <div class="filter-dropdown">
+                    <button type="button" class="filter-button" onclick="toggleFilter('description')">
+                        Description
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="description" class="filter-content">
+                        <input type="text" name="description" value="{{ job_filters.description }}" class="filter-input" placeholder="Search in description...">
+                    </div>
+                </div>
+                <div class="filter-dropdown">
+                    <button type="button" class="filter-button" onclick="toggleFilter('minSalary')">
+                        Min Salary
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="minSalary" class="filter-content">
+                        <input type="number" name="min_salary" value="{{ job_filters.min_salary }}" class="filter-input" placeholder="Minimum salary">
+                    </div>
+                </div>
+                <div class="filter-dropdown">
+                    <button type="button" class="filter-button" onclick="toggleFilter('maxSalary')">
+                        Max Salary
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="maxSalary" class="filter-content">
+                        <input type="number" name="max_salary" value="{{ job_filters.max_salary }}" class="filter-input" placeholder="Maximum salary">
+                    </div>
+                </div>
+                <div class="flex items-end space-x-4">
+                    <label class="flex items-center">
+                        <input type="checkbox" name="is_remote" {% if job_filters.is_remote %}checked{% endif %} class="rounded border-gray-300">
+                        <span class="ml-2 text-sm text-gray-700">Remote Only</span>
+                    </label>
+                    <button type="submit" class="apply-button">Apply Filters</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Jobs Table -->
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+            <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-white">
+                        <tr>
+                            <th class="px-6 py-3 text-left table-header">Title</th>
+                            <th class="px-6 py-3 text-left table-header">Company</th>
+                            <th class="px-6 py-3 text-left table-header">Level</th>
+                            <th class="px-6 py-3 text-left table-header">Location</th>
+                            <th class="px-6 py-3 text-left table-header">Salary</th>
+                            <th class="px-6 py-3 text-left table-header">Remote</th>
+                            <th class="px-6 py-3 text-left table-header">Skills</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for job in jobs %}
+                        <tr class="table-row" onclick="toggleDescription(this, 'job-{{ job.id }}')">
+                            <td class="px-6 py-4">
+                                <div class="text-sm text-gray-900">{{ job.title }}</div>
+                                {% if job.url %}
+                                <div class="text-sm text-gray-500 mt-1">
+                                    <a href="{{ job.url }}" target="_blank" class="url-link" onclick="event.stopPropagation()">Apply Now</a>
+                                </div>
+                                {% endif %}
+                        </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ job.company_name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ job.level }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ job.location }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {% if job.min_salary and job.max_salary %}
+                                ${{ job.min_salary|floatformat:0 }}k - ${{ job.max_salary|floatformat:0 }}k
+                            {% elif job.min_salary %}
+                                From ${{ job.min_salary|floatformat:0 }}k
+                            {% elif job.max_salary %}
+                                Up to ${{ job.max_salary|floatformat:0 }}k
+                            {% else %}
+                                Not specified
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {% if job.is_remote %}
+                                    <span class="tag">Yes</span>
+                            {% else %}
+                                    <span class="tag">No</span>
+                            {% endif %}
+                        </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ job.skills|truncatechars:30 }}</td>
+                        </tr>
+                        <tr id="job-{{ job.id }}" class="description-row">
+                            <td colspan="7" class="description-cell">
+                                <div class="text-sm text-gray-600">
+                                    <div class="font-medium text-gray-900 mb-2">Job Description:</div>
+                                    {% if job.description %}
+                                        {{ job.description|linebreaks }}
+                                    {% else %}
+                                        No description available.
+                                    {% endif %}
+                                    {% if job.skills %}
+                                        <div class="mt-4">
+                                            <div class="font-medium text-gray-900 mb-2">Required Skills:</div>
+                                            {{ job.skills }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                            <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">No jobs found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+            {% if companies.has_next or jobs.has_next %}
+                <div class="flex justify-center py-4">
+                    <button id="loadMoreBtn" class="apply-button" onclick="loadMore()">
+                        Load More
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        let currentPage = 1;
+        let isLoading = false;
+
+        async function loadMore() {
+            if (isLoading) return;
+            
+            isLoading = true;
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            loadMoreBtn.textContent = 'Loading...';
+            
+            const nextPage = currentPage + 1;
+            const queryParams = new URLSearchParams(window.location.search);
+            queryParams.set('page', nextPage);
+
+            try {
+                const response = await fetch(`${window.location.pathname}?${queryParams.toString()}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                const tbody = document.querySelector('tbody');
+                tbody.insertAdjacentHTML('beforeend', data.html);
+                
+                currentPage = nextPage;
+                
+                if (!data.has_next) {
+                    loadMoreBtn.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading more items:', error);
+            } finally {
+                isLoading = false;
+                loadMoreBtn.textContent = 'Load More';
+            }
+        }
+
+        function toggleDescription(row, descriptionId) {
+            const descriptionRow = document.getElementById(descriptionId);
+            const allDescriptionRows = document.querySelectorAll('.description-row');
+            
+            // Close all other description rows
+            allDescriptionRows.forEach(dr => {
+                if (dr.id !== descriptionId && dr.classList.contains('active')) {
+                    dr.classList.remove('active');
+                }
+            });
+
+            // Toggle clicked description row
+            descriptionRow.classList.toggle('active');
+            
+            // Add animation to the clicked row
+            row.style.transform = 'translateY(-2px)';
+            setTimeout(() => {
+                row.style.transform = 'translateY(0)';
+            }, 200);
+        }
+
+        function toggleCompanyDescription(row, descriptionId) {
+            toggleDescription(row, descriptionId);
+        }
+
+        function toggleFilter(filterId) {
+            const allDropdowns = document.querySelectorAll('.filter-content');
+            const allChevrons = document.querySelectorAll('.chevron');
+            const currentDropdown = document.getElementById(filterId);
+            const currentButton = currentDropdown.previousElementSibling;
+            const currentChevron = currentButton.querySelector('.chevron');
+
+            // Close all other dropdowns
+            allDropdowns.forEach(dropdown => {
+                if (dropdown !== currentDropdown && dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            });
+
+            // Reset all other chevrons
+            allChevrons.forEach(chevron => {
+                if (chevron !== currentChevron && chevron.classList.contains('rotate')) {
+                    chevron.classList.remove('rotate');
+                }
+            });
+
+            // Toggle current dropdown
+            currentDropdown.classList.toggle('show');
+            currentChevron.classList.toggle('rotate');
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.filter-dropdown')) {
+                const dropdowns = document.querySelectorAll('.filter-content');
+                const chevrons = document.querySelectorAll('.chevron');
+                dropdowns.forEach(dropdown => dropdown.classList.remove('show'));
+                chevrons.forEach(chevron => chevron.classList.remove('rotate'));
+            }
+        });
+    </script>
+</body>
+</html> 

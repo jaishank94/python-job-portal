@@ -1,0 +1,220 @@
+{% load humanize %}
+{% for company in companies %}
+<tr class="border-b border-gray-150 cursor-pointer" onclick="toggleCompanyDescription(this, 'company-{{ company.id }}')">
+    
+     <!-- Mobile -->
+     <td class="px-2 py-4 md:px-6 whitespace-nowrap text-sm font-light flex items-center space-x-3 md:hidden">
+        <img src="{{ company.logo_url|default:'https://res.cloudinary.com/read-cv/image/upload/c_fill,h_40,w_40/dpr_1.0/v1/1/teams/pZb0dT556KYtJvcNW8mt/profilePhoto-d0711805-831a-4f67-b81d-9b982a9b25ef.png?_a=DATAdtAAZAA0' }}" alt="Company Logo"
+             class="w-8 h-8 rounded-full object-cover" />
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light  md:hidden">{{ company.name|truncatechars:30|default:"-" }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light  md:hidden">{{ company.hq|truncatechars:30|default:"-" }}</td>
+
+    <!-- Desktop / Tab -->
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-900 flex items-center space-x-3 mobile-hidden">
+        <img src="{{ company.logo_url|default:'https://res.cloudinary.com/read-cv/image/upload/c_fill,h_40,w_40/dpr_1.0/v1/1/teams/pZb0dT556KYtJvcNW8mt/profilePhoto-d0711805-831a-4f67-b81d-9b982a9b25ef.png?_a=DATAdtAAZAA0' }}" alt="Company Logo" class="w-8 h-8 rounded-full object-cover" >
+        
+        <div>
+            {% if company.website %}
+                <a href="{{ company.website }}" target="_blank" class="text-sm font-light underline" onclick="event.stopPropagation()">
+                    {{ company.name|truncatechars:30 }}
+                </a>
+                <div class="mt-1">
+                    <a href="{{ company.website }}" target="_blank" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-1 rounded transition-colors duration-200" onclick="event.stopPropagation()">Visit Website</a>
+                </div>
+            {% else %}
+                <span class="font-medium">{{ company.name|truncatechars:30 }}</span>
+            {% endif %}
+        </div>
+    </td>
+    
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">
+        {% if company.valuation %}
+            ${{ company.valuation|floatformat:0|intcomma }}M
+        {% else %}
+            -
+        {% endif %}
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.latest_funding_stage|default:"-" }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">
+        {% if company.latest_funding_amount %}
+            ${{ company.latest_funding_amount|floatformat:0|intcomma }}M
+        {% else %}
+            -
+        {% endif %}
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">
+        {% if company.latest_funding_date %}
+            {{ company.latest_funding_date|date:"M Y" }}
+        {% else %}
+            -
+        {% endif %}
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">
+        {% if company.total_funding_amount %}
+            ${{ company.total_funding_amount|floatformat:0|intcomma }}M
+        {% else %}
+            -
+        {% endif %}
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.investors|truncatechars:30|default:"-" }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.hq|truncatechars:30|default:"-" }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.offices|truncatechars:30|default:"-" }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.industries|truncatechars:30|default:"-" }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.founded_date|date:"M Y"|default:"-" }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.founders|truncatechars:30|default:"-" }}</td>
+</tr>
+<tr id="company-{{ company.id }}" class="description-row">
+    <td colspan="12" class="pb-4">
+        <div class="text-sm text-gray-600 pl-4 max-w-5xl">
+            <!-- Name, Website and Description - Full Width -->
+            <div class="mb-4">
+                <!-- <div class="text-lg font-light text-gray-500">{{ company.name }}</div>
+                {% if company.website %}
+                    <a href="{{ company.website }}" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 mt-1 inline-block" onclick="event.stopPropagation()">Visit Website →</a>
+                {% endif %} -->
+            </div>
+
+            <!-- Two Column Layout -->
+            <div class="grid grid-cols-1 md:grid-cols-1 gap-x-6 gap-y-3 pr-4">
+                <!-- Left Column -->
+                <div class="space-y-3">
+                    <!-- Financial Information -->
+                    <div>
+                        <!-- <div class="font-light text-gray-500 mb-1">Financial Information</div> -->
+                        <div class="space-y-1">
+                            <div>
+                                <div class="font-light text-gray-500 mb-1">Valuation</div>
+                                <div class="space-y-1">
+                                    {% if company.valuation %}
+                                        ${{ company.valuation|floatformat:0|intcomma }}M
+                                    {% else %}
+                                        Not specified
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div>
+                                <div class="font-light text-gray-500 mb-1">Last Funding Stage:</div>
+                                <div class="space-y-1">
+                                    {{ company.latest_funding_stage|default:"Not specified" }}
+                                </div>
+                            </div>
+                            <div>
+                                <div class="font-light text-gray-500 mb-1">Last Funding Amount:</div>
+                                <div class="space-y-1">
+                                    {% if company.latest_funding_amount %}
+                                        ${{ company.latest_funding_amount|floatformat:0|intcomma }}M
+                                    {% else %}
+                                        Not specified
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div>
+                                <div class="font-light text-gray-500 mb-1">Last Funding Date:</div>
+                                <div class="space-y-1">
+                                    {% if company.latest_funding_date %}
+                                        {{ company.latest_funding_date|date:"F Y" }}
+                                    {% else %}
+                                        Not specified
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div>
+                                <div class="font-light text-gray-500 mb-1">Total Funding Amount:</div>
+                                <div class="space-y-1">
+                                    {% if company.total_funding_amount %}
+                                        ${{ company.total_funding_amount|floatformat:0|intcomma }}M
+                                    {% else %}
+                                        Not specified
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Location Information -->
+                    <div>
+                        <!-- <div class="font-light text-gray-500 mb-1">Location</div> -->
+                        <div class="space-y-1">
+                            <div>
+                                <div class="font-light text-gray-500 mb-1">Headquarters:</div>
+                                <div class="space-y-1">
+                                    {{ company.hq|default:"Not specified" }}
+                                </div>
+                            </div>
+                            <div>
+                                <div class="font-light text-gray-500 mb-1">Offices:</div>
+                                <div class="space-y-1">
+                                    {{ company.offices|default:"Not specified" }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="space-y-3">
+                    <!-- Company Information -->
+                    <div>
+                        <!-- <div class="font-light text-gray-500 mb-1">Company Information</div> -->
+                        <div class="space-y-1">
+                            <div>
+                                <div class="font-light text-gray-500 mb-1">Industries:</div>
+                                <div class="space-y-1">
+                                    {{ company.industries|default:"Not specified" }}
+                                </div>
+                            </div>
+                            <div>
+                                <div class="font-light text-gray-500 mb-1">Founded Date:</div>
+                                <div class="space-y-1">
+                                    {% if company.founded_date %}
+                                        {{ company.founded_date|date:"F Y" }}
+                                    {% else %}
+                                        Not specified
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div>
+                                <div class="font-light text-gray-500 mb-1">Founders:</div>
+                                <div class="space-y-1">
+                                    {{ company.founders|default:"Not specified" }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Investors -->
+                    <div>
+                        <div class="font-light text-gray-500 mb-1">Investors:</div>
+                        <div class="space-y-1">
+                            {{ company.investors|default:"Not specified" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-3">
+                <div class="font-light text-gray-500 mb-1">Description</div>
+                <div class="my-2">
+
+                    {% if company.description %}
+                        {{ company.description|linebreaks }}
+                    {% else %}
+                        No description available.
+                    {% endif %}
+                </div>
+            </div>
+            <div class="mt-3">
+                <div class="font-light text-gray-500 mb-1">Posted on: </div>
+                <div class="my-2">
+
+                    {% if company.created_at %}
+                        {{ company.created_at }}
+                    {% else %}
+                        No time information available.
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </td>
+</tr>
+{% endfor %} 
