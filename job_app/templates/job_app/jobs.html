@@ -585,7 +585,7 @@
         <form id="filterForm">
             <div class="filter-group">
                 <button type="button" class="filter-button w-full flex justify-between items-center px-2 py-2 rounded-md">
-                    <span class="font-light text-base">Title</span>
+                    <span class="font-light text-base">Position</span>
                     <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
@@ -618,7 +618,8 @@
     </div>
 </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 overflow-hidden">
+        <div class="w-full overflow-x-auto">
         <!-- <h1 class="text-gray-500" style="font-size: 0.80rem;">
             {% if request.GET.list_id %}
                 {% for list in job_lists %}
@@ -762,9 +763,9 @@
         </div>
 
         <!-- Jobs Table -->
-        <div class="table-view bg-white rounded-lg overflow-hidden ml-[1.5rem]">
-            <div class="overflow-x-auto">
-                <table class="min-w-full">
+        <div class="table-view bg-white rounded-lg overflow-hidden ml-[1.5rem] w-full">
+            <div class="overflow-x-auto w-full">
+                <table class="table-auto w-full max-w-full">
                     <thead class="bg-white">
                         <tr>
                             <!-- Mobile-->
@@ -845,6 +846,7 @@
                 </button>
             </div>
         {% endif %}
+    </div>
     </div>
 
     <!-- Login Popup -->

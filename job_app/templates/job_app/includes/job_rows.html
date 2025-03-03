@@ -16,11 +16,11 @@
              alt="{{ job.company_name }}" 
              class="w-8 h-8 rounded-full object-cover" />
     </td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm font-light md:hidden">
-        <div class="underline">{{ job.title|truncatechars:30 }}</div>
-        <div class="font-light text-sm text-gray-400 my-2">{{ job.company_name|truncatechars:30|default:"-" }}</div>
+    <td class="px-2 py-4 whitespace-nowrap text-sm font-light md:hidden">
+        <div class="underline">{{ job.title|truncatechars:20 }}</div>
+        <div class="font-light text-sm text-gray-400 my-2">{{ job.company_name|truncatechars:20|default:"-" }}</div>
     </td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm font-light md:hidden">{{ job.created_at|default:"-" }}</td>
+    <td class="px-2 py-4 whitespace-nowrap text-sm font-light md:hidden">{{ job.created_at|timesince|default:"-" }} ago</td>
 
     <!-- Desktop / Tab -->
     <td class="px-6 py-4 whitespace-nowrap text-sm font-light flex items-center space-x-3 mobile-hidden">
@@ -173,7 +173,7 @@
                 <div class="my-2">
 
                     {% if job.created_at %}
-                        {{ job.created_at }}
+                        {{ job.created_at|timesince|default:"-" }} ago
                     {% else %}
                         No time information
                     {% endif %}
