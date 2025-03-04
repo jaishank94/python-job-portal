@@ -104,7 +104,7 @@
                     <!-- Company and Location -->
                     <div>
                         <!-- <div class="font-light text-gray-500 mb-1">Company Information</div> -->
-                        <div class="space-y-1">
+                        <!-- <div class="space-y-1">
                             <div>
                                 <div class="font-light text-gray-500 mb-1">Company:</div>
                                 <div class="space-y-1">
@@ -117,7 +117,7 @@
                                     {{ job.location|default:"Not specified" }}
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
 
                     <!-- Experience and Level -->
@@ -125,7 +125,7 @@
                         <!-- <div class="font-light text-gray-500 mb-1">Position Details</div> -->
                         <div class="space-y-1">
                             <div>
-                                <div class="font-light text-gray-500 mb-1">Experience Required:</div>
+                                <div class="font-light text-gray-500 mb-1">Years of Experience</div>
                                 <div class="space-y-1">
                                     {% if job.min_years_of_experience or job.max_years_of_experience %}
                                     {% if job.min_years_of_experience and job.max_years_of_experience %}
@@ -142,7 +142,7 @@
                                 
                             </div>
                             <div>
-                                <div class="font-light text-gray-500 mb-1">Level:</div>
+                                <div class="font-light text-gray-500 mb-1">Level</div>
                                 <div class="space-y-1">
                                     {{ job.level|default:"Not specified" }}
                                 </div>
@@ -155,7 +155,7 @@
                 <div class="space-y-3">
                     <!-- Skills -->
                     <div>
-                        <div class="font-light text-gray-500 mb-1">Required Skills</div>
+                        <div class="font-light text-gray-500 mb-1">Skills</div>
                         <div class="space-y-1">
                             {{ job.skills|default:"Not specified" }}
                         </div>
@@ -163,7 +163,7 @@
 
                     <!-- Salary -->
                     <div>
-                        <div class="font-light text-gray-500 mb-1">Compensation</div>
+                        <div class="font-light text-gray-500 mb-1">Compensation Salary</div>
                         <div class="space-y-1">
                             {% if job.min_salary and job.max_salary %}
                                 ${{ job.min_salary|floatformat:0|intcomma }} - ${{ job.max_salary|floatformat:0|intcomma }}

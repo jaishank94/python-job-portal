@@ -317,6 +317,17 @@
             border-color: #1f2937 transparent transparent transparent;
         }
 
+        select {
+            border: none;
+            background: transparent;
+        }
+        
+        select:focus {
+            outline: none;
+            box-shadow: none;
+            border: none;
+        }
+
         /* Mobile view styles */
         @media (max-width: 768px) {
             .mobile-hidden {
@@ -771,8 +782,8 @@
                 <div class="mt-4 flex justify-between">
                     <!-- <button type="button" onclick="clearFilters()" class="border border-gray-300 text-gray-400 text-xs px-4 py-2 rounded opacity-50">Clear Filters</button>
                     <button type="button" onclick="applyFilters()" class="bg-gray-300 text-gray-500 text-xs px-4 py-2 rounded opacity-50">Apply Filters</button> -->
-                    <button type="button" onclick="clearFilters()" class="text-xs px-4 py-2 rounded opacity-50">Clear Filters</button>
-                    <button type="button" onclick="applyFilters()" class="text-xs px-4 py-2 rounded opacity-50">Apply Filters</button>
+                    <button type="button" onclick="clearFilters()" class="text-gray-500 text-sm px-4 py-2 rounded opacity-50">Clear Filters</button>
+                    <button type="button" onclick="applyFilters()" class="text-gray-500 text-sm px-4 py-2 rounded opacity-50">Apply Filters</button>
                 </div>
             </form>
         </div>
@@ -960,8 +971,8 @@
             <div class="mt-4 ml-[0.75rem] filter-actions">
                 <!-- <button type="button" onclick="clearFilters()" class="border border-gray-300 text-gray-400 text-xs px-2 py-2 rounded-lg opacity-50">Clear Filters</button>
                 <button type="button" onclick="applyFilters()" class="bg-gray-300 text-gray-500 text-xs px-2 py-2 rounded-lg opacity-50">Apply Filters</button> -->
-                <button type="button" onclick="clearFilters()" class="text-gray-400 text-xs px-2 py-2 rounded-lg opacity-50">Clear Filters</button>
-                <button type="button" onclick="applyFilters()" class="text-gray-500 text-xs px-2 py-2 rounded-lg opacity-50">Apply Filters</button>
+                <button type="button" onclick="clearFilters()" class="text-gray-500 text-sm px-2 py-2 rounded-lg opacity-50">Clear Filters</button>
+                <button type="button" onclick="applyFilters()" class="text-gray-500 text-sm px-2 py-2 rounded-lg opacity-50">Apply Filters</button>
             </div>
         </div>
 
