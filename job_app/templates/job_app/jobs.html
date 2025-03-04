@@ -119,14 +119,14 @@
         .filter-button.active {
             color: black;
         }
-        .filter-content {
+        /* .filter-content {
             position: absolute;
             width: 100%;
             z-index: 10;
             background-color: white;
             border-radius: 0.375rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
+        } */
         .apply-button {
             background-color: #f8fafc;
             color: #64748b;
@@ -585,7 +585,7 @@
         <form id="filterForm">
             <div class="filter-group">
                 <button type="button" class="filter-button w-full flex justify-between items-center px-2 py-2 rounded-md">
-                    <span class="font-light text-base">Position</span>
+                    <span class="font-light text-sm">Title</span>
                     <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
@@ -598,7 +598,7 @@
             <!-- More Filters -->
             <div class="filter-group mt-4">
                 <button type="button" class="filter-button w-full flex justify-between items-center px-2 py-2 rounded-md">
-                    <span class="font-light text-base">Company</span>
+                    <span class="font-light text-sm">Company</span>
                     <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
@@ -608,10 +608,86 @@
                 </div>
             </div>
 
+            <div class="filter-group mt-4">
+                <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                    <span class="font-light text-sm">Location</span>
+                    <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="filter-content hidden mt-2">
+                    <input type="text" name="location" value="{{ job_filters.location }}" class="filter-input" placeholder="e.g. New York City">
+                </div>
+            </div>
+
+            <div class="filter-group mt-4">
+                <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                    <span class="font-light text-sm">Salary ($K)</span>
+                    <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="filter-content hidden mt-2">
+                    <input type="number" name="min_salary" value="{{ job_filters.min_salary }}" class="filter-input mb-2" placeholder="Min Salary">
+                    <input type="number" name="max_salary" value="{{ job_filters.max_salary }}" class="filter-input" placeholder="Max Salary">
+                </div>
+            </div>
+
+            <div class="filter-group mt-4">
+                <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                    <span class="font-light text-sm">Years of Experience</span>
+                    <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="filter-content hidden mt-2">
+                    <input type="number" name="min_years_experience" value="{{ job_filters.min_years_experience }}" class="filter-input mb-2" placeholder="Min Years">
+                    <input type="number" name="max_years_experience" value="{{ job_filters.max_years_experience }}" class="filter-input" placeholder="Max Years">
+                </div>
+            </div>
+
+            <div class="filter-group mt-4">
+                <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                    <span class="font-light text-sm">Level</span>
+                    <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="filter-content hidden mt-2">
+                    <input type="text" name="level" value="{{ job_filters.level }}" class="filter-input" placeholder="e.g. Junior">
+                </div>
+            </div>
+
+            <div class="filter-group mt-4">
+                <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                    <span class="font-light text-sm">Skills</span>
+                    <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="filter-content hidden mt-2">
+                    <input type="text" name="skills" value="{{ job_filters.skills }}" class="filter-input" placeholder="e.g. Python">
+                </div>
+            </div>
+
+            <div class="filter-group mt-4">
+                <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2  rounded-md">
+                    <span class="font-light text-sm">Description</span>
+                    <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="filter-content hidden mt-2">
+                    <input type="text" name="description" value="{{ job_filters.description }}" class="filter-input" placeholder="e.g. Commodities">
+                </div>
+            </div>
+
             <!-- Apply & Clear Filters -->
             <div class="mt-4 flex justify-between">
-                <button type="button" onclick="clearFilters()" class="border border-gray-300 text-gray-400 text-xs px-4 py-2 rounded opacity-50">Clear Filters</button>
-                <button type="button" onclick="applyFilters()" class="bg-gray-300 text-gray-500 text-xs px-4 py-2 rounded opacity-50">Apply Filters</button>
+                <!-- <button type="button" onclick="clearFilters()" class="border border-gray-300 text-gray-400 text-xs px-4 py-2 rounded opacity-50">Clear Filters</button>
+                <button type="button" onclick="applyFilters()" class="bg-gray-300 text-gray-500 text-xs px-4 py-2 rounded opacity-50">Apply Filters</button> -->
+                <button type="button" onclick="clearFilters()" class="text-xs px-4 py-2 rounded opacity-50">Clear Filters</button>
+                <button type="button" onclick="applyFilters()" class="text-xs px-4 py-2 rounded opacity-50">Apply Filters</button>
             </div>
         </form>
     </div>
@@ -637,7 +713,7 @@
             <form method="GET" class="flex flex-row" id="filterForm" onsubmit="return false;">
                 <div class="filter-group">
                     <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
-                        <span class="font-light text-base">Title</span>
+                        <span class="font-light text-sm">Title</span>
                         <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
@@ -649,7 +725,7 @@
 
                 <div class="filter-group">
                     <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
-                        <span class="font-light text-base">Company</span>
+                        <span class="font-light text-sm">Company</span>
                         <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
@@ -661,7 +737,7 @@
 
                 <div class="filter-group">
                     <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
-                        <span class="font-light text-xbases">Location</span>
+                        <span class="font-light text-sm">Location</span>
                         <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
@@ -673,7 +749,7 @@
 
                 <div class="filter-group">
                     <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
-                        <span class="font-light text-base">Salary ($K)</span>
+                        <span class="font-light text-sm">Salary ($K)</span>
                         <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
@@ -686,7 +762,7 @@
 
                 <div class="filter-group">
                     <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
-                        <span class="font-light text-base">Years of Experience</span>
+                        <span class="font-light text-sm">Years of Experience</span>
                         <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
@@ -699,7 +775,7 @@
 
                 <div class="filter-group">
                     <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
-                        <span class="font-light text-base">Level</span>
+                        <span class="font-light text-sm">Level</span>
                         <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
@@ -711,7 +787,7 @@
 
                 <div class="filter-group">
                     <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
-                        <span class="font-light text-base">Skills</span>
+                        <span class="font-light text-sm">Skills</span>
                         <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
@@ -723,7 +799,7 @@
 
                 <div class="filter-group">
                     <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2  rounded-md">
-                        <span class="font-light text-base">Description</span>
+                        <span class="font-light text-sm">Description</span>
                         <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
@@ -750,7 +826,9 @@
                 {% endfor %}
                 <div class=" max-w-md">
                     <select name="list_id" class="font-light" onchange="document.getElementById('listForm').submit()">
-                        <option class="" value="">List of Jobs</option>
+                        <option value="" class="font-light text-sm">List of Jobs</option>
+                        <option value="" class="font-light text-sm">List of Companies</option>
+                        <option value="" class="font-light text-sm">About</option>
                         {% for list in job_lists %}
                             <option value="{{ list.id }}" {% if request.GET.list_id == list.id|stringformat:"s" %}selected{% endif %}>
                                 {{ list.description }}
@@ -771,8 +849,7 @@
                             <!-- Mobile-->
                             <th class="px-6 py-3 text-left text-gray-400 font-light text-sm md:hidden"></th>
                             <th class="px-6 py-3 text-left text-gray-400 font-light text-sm md:hidden">Position</th>
-                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm md:hidden">Posted</th>
-
+                            
                             <!-- Desktop / Tab-->
                             <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Company</th>
                             <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Title</th>
@@ -781,6 +858,7 @@
                             <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Level</th>
                             <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Skills</th>
                             <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Salary</th>
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm">Posted</th>
                         </tr>
                     </thead>
                     <tbody id="jobsTableBody">
@@ -1052,22 +1130,35 @@
         }
 
         function applyFilters() {
-            const form = document.getElementById('filterForm');
+            // Select only the visible form (ignore hidden forms)
+            const forms = document.querySelectorAll('[id="filterForm"]');
             
+            let activeForm = null;
+            
+            forms.forEach(form => {
+                if (form.offsetParent !== null) { // Checks if the form is visible
+                    activeForm = form;
+                }
+            });
+
+            if (!activeForm) return; // No visible form found, exit function
+
             // Get the current list_id from URL
             const urlParams = new URLSearchParams(window.location.search);
             const listId = urlParams.get('list_id');
-            
-            // Add list_id to the form if it exists
-            if (listId) {
+
+            // Check if the hidden input already exists to avoid duplicates
+            let existingInput = activeForm.querySelector('input[name="list_id"]');
+
+            if (!existingInput && listId) {
                 const listIdInput = document.createElement('input');
                 listIdInput.type = 'hidden';
                 listIdInput.name = 'list_id';
                 listIdInput.value = listId;
-                form.appendChild(listIdInput);
+                activeForm.appendChild(listIdInput);
             }
-            
-            form.submit();
+
+            activeForm.submit();
         }
 
         function showLoginPopup(url, e) {
