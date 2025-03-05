@@ -561,6 +561,11 @@
             row.style.transform = 'translateY(-2px)';
             setTimeout(() => {
                 row.style.transform = 'translateY(0)';
+
+                // Remove the transform property after animation completes
+                setTimeout(() => {
+                    row.style.removeProperty('transform');
+                }, 50);
             }, 200);
         }
     </script>
@@ -615,8 +620,8 @@
         </div>
         
         <!-- Job Filters -->
-        <div class="p-4">
-            <form id="filterForm">
+        <div class="h-full flex flex-col">
+            <form id="filterForm" class="overflow-y-auto flex-grow px-4">
                 <div class="filter-group">
                     <button type="button" class="filter-button w-full flex justify-between items-center px-2 py-2 rounded-md">
                         <span class="font-light text-sm">Name</span>
@@ -778,14 +783,14 @@
                     </div>
                 </div>
     
-                <!-- Apply & Clear Filters -->
-                <div class="mt-4 flex justify-between">
-                    <!-- <button type="button" onclick="clearFilters()" class="border border-gray-300 text-gray-400 text-xs px-4 py-2 rounded opacity-50">Clear Filters</button>
-                    <button type="button" onclick="applyFilters()" class="bg-gray-300 text-gray-500 text-xs px-4 py-2 rounded opacity-50">Apply Filters</button> -->
-                    <button type="button" onclick="clearFilters()" class="text-gray-500 text-sm px-4 py-2 rounded opacity-50">Clear Filters</button>
-                    <button type="button" onclick="applyFilters()" class="text-gray-500 text-sm px-4 py-2 rounded opacity-50">Apply Filters</button>
-                </div>
             </form>
+            <!-- Apply & Clear Filters -->
+            <div class="mt-4 flex justify-between fixed bottom-24 left-0 right-0">
+                <!-- <button type="button" onclick="clearFilters()" class="border border-gray-300 text-gray-400 text-xs px-4 py-2 rounded opacity-50">Clear Filters</button>
+                <button type="button" onclick="applyFilters()" class="bg-gray-300 text-gray-500 text-xs px-4 py-2 rounded opacity-50">Apply Filters</button> -->
+                <button type="button" onclick="clearFilters()" class="text-gray-500 text-sm px-4 py-2 rounded opacity-50">Clear Filters</button>
+                <button type="button" onclick="applyFilters()" class="text-gray-500 text-sm px-4 py-2 rounded opacity-50">Apply Filters</button>
+            </div>
         </div>
     </div>
 </div>
@@ -1212,11 +1217,11 @@
         <!-- Company Lists Section -->
         <div class="bg-white rounded-lg py-6 pr-6 mb-8 ml-0">
             <form method="GET" class="w-full" id="listForm">
-                <div class="max-w-md">
-                    <!-- <select name="list_id" class="font-light" 
+                <!-- <div class="max-w-md relative">
+                    <select name="list_id" class="font-light" 
                         onchange="this.form.submit()"
-                    > -->
-                    <select name="list_id" class="font-light">
+                    >
+                    <select name="list_id" class="font-light appearance-none">
                         <option value="" class="font-light text-sm">List of Companies</option>
                         <option value="" class="font-light text-sm">List of Jobs</option>
                         <option value="" class="font-light text-sm">About</option>
@@ -1224,7 +1229,32 @@
                             <option value="{{ list.id }}" {% if company_filters.list_id == list.id|stringformat:"s" %}selected{% endif %} class="font-light text-sm">{{ list.description }}</option>
                         {% endfor %}
                     </select>
+                    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                        <svg class="w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                </div> -->
+                <div class="inline-flex items-center rounded-md px-2 py-1 bg-white">
+                    <!-- <select name="list_id"
+                            class="font-light appearance-none bg-transparent text-black pr-6 focus:outline-none"
+                            onchange="this.form.submit()"
+                            > -->
+                    <select name="list_id"
+                            class="font-light appearance-none bg-transparent text-black pr-6 focus:outline-none"
+                    >
+                        <option value="" class="font-light text-sm">List of Jobs</option>
+                        <option value="" class="font-light text-sm">List of Companies</option>
+                        <option value="" class="font-light text-sm">About</option>
+                    </select>
+                    <!-- Custom Dropdown Icon -->
+                    <div class="-ml-5 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
                 </div>
+                
             </form>
         </div>
 
