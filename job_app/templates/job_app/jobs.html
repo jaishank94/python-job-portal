@@ -594,104 +594,107 @@
     <!-- Job Filters -->
     <div class="h-full flex flex-col p-4">
         <form id="filterForm">
-            <div class="filter-group">
-                <button type="button" class="filter-button w-full flex justify-between items-center px-2 py-2 rounded-md">
-                    <span class="font-light text-sm">Title</span>
-                    <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </button>
-                <div class="filter-content hidden mt-2">
-                    <input type="text" name="title" value="{{ job_filters.title }}" class="filter-input w-full border px-2 py-1 rounded" placeholder="e.g. Software Engineer">
+            <div class="" style="">
+                <div class="filter-group">
+                    <button type="button" class="filter-button w-full flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-sm">Title</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="text" name="title" value="{{ job_filters.title }}" class="filter-input w-full border px-2 py-1 rounded" placeholder="e.g. Software Engineer">
+                    </div>
+                </div>
+    
+                <!-- More Filters -->
+                <div class="filter-group mt-4">
+                    <button type="button" class="filter-button w-full flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-sm">Company</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="text" name="company" value="{{ job_filters.company }}" class="filter-input w-full border px-2 py-1 rounded" placeholder="e.g. Stripe">
+                    </div>
+                </div>
+    
+                <div class="filter-group mt-4">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-sm">Location</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="text" name="location" value="{{ job_filters.location }}" class="filter-input" placeholder="e.g. New York City">
+                    </div>
+                </div>
+    
+                <div class="filter-group mt-4">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-sm">Salary ($K)</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="number" name="min_salary" value="{{ job_filters.min_salary }}" class="filter-input mb-2" placeholder="Min Salary">
+                        <input type="number" name="max_salary" value="{{ job_filters.max_salary }}" class="filter-input" placeholder="Max Salary">
+                    </div>
+                </div>
+    
+                <div class="filter-group mt-4">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-sm">Years of Experience</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="number" name="min_years_experience" value="{{ job_filters.min_years_experience }}" class="filter-input mb-2" placeholder="Min Years">
+                        <input type="number" name="max_years_experience" value="{{ job_filters.max_years_experience }}" class="filter-input" placeholder="Max Years">
+                    </div>
+                </div>
+    
+                <div class="filter-group mt-4">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-sm">Level</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="text" name="level" value="{{ job_filters.level }}" class="filter-input" placeholder="e.g. Junior">
+                    </div>
+                </div>
+    
+                <div class="filter-group mt-4">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
+                        <span class="font-light text-sm">Skills</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="text" name="skills" value="{{ job_filters.skills }}" class="filter-input" placeholder="e.g. Python">
+                    </div>
+                </div>
+    
+                <div class="filter-group mt-4">
+                    <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2  rounded-md">
+                        <span class="font-light text-sm">Description</span>
+                        <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="filter-content hidden mt-2">
+                        <input type="text" name="description" value="{{ job_filters.description }}" class="filter-input" placeholder="e.g. Commodities">
+                    </div>
                 </div>
             </div>
-
-            <!-- More Filters -->
-            <div class="filter-group mt-4">
-                <button type="button" class="filter-button w-full flex justify-between items-center px-2 py-2 rounded-md">
-                    <span class="font-light text-sm">Company</span>
-                    <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </button>
-                <div class="filter-content hidden mt-2">
-                    <input type="text" name="company" value="{{ job_filters.company }}" class="filter-input w-full border px-2 py-1 rounded" placeholder="e.g. Stripe">
-                </div>
-            </div>
-
-            <div class="filter-group mt-4">
-                <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
-                    <span class="font-light text-sm">Location</span>
-                    <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </button>
-                <div class="filter-content hidden mt-2">
-                    <input type="text" name="location" value="{{ job_filters.location }}" class="filter-input" placeholder="e.g. New York City">
-                </div>
-            </div>
-
-            <div class="filter-group mt-4">
-                <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
-                    <span class="font-light text-sm">Salary ($K)</span>
-                    <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </button>
-                <div class="filter-content hidden mt-2">
-                    <input type="number" name="min_salary" value="{{ job_filters.min_salary }}" class="filter-input mb-2" placeholder="Min Salary">
-                    <input type="number" name="max_salary" value="{{ job_filters.max_salary }}" class="filter-input" placeholder="Max Salary">
-                </div>
-            </div>
-
-            <div class="filter-group mt-4">
-                <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
-                    <span class="font-light text-sm">Years of Experience</span>
-                    <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </button>
-                <div class="filter-content hidden mt-2">
-                    <input type="number" name="min_years_experience" value="{{ job_filters.min_years_experience }}" class="filter-input mb-2" placeholder="Min Years">
-                    <input type="number" name="max_years_experience" value="{{ job_filters.max_years_experience }}" class="filter-input" placeholder="Max Years">
-                </div>
-            </div>
-
-            <div class="filter-group mt-4">
-                <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
-                    <span class="font-light text-sm">Level</span>
-                    <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </button>
-                <div class="filter-content hidden mt-2">
-                    <input type="text" name="level" value="{{ job_filters.level }}" class="filter-input" placeholder="e.g. Junior">
-                </div>
-            </div>
-
-            <div class="filter-group mt-4">
-                <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2 rounded-md">
-                    <span class="font-light text-sm">Skills</span>
-                    <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </button>
-                <div class="filter-content hidden mt-2">
-                    <input type="text" name="skills" value="{{ job_filters.skills }}" class="filter-input" placeholder="e.g. Python">
-                </div>
-            </div>
-
-            <div class="filter-group mt-4">
-                <button type="button" class="filter-button w-full text-left flex justify-between items-center px-2 py-2  rounded-md">
-                    <span class="font-light text-sm">Description</span>
-                    <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </button>
-                <div class="filter-content hidden mt-2">
-                    <input type="text" name="description" value="{{ job_filters.description }}" class="filter-input" placeholder="e.g. Commodities">
-                </div>
-            </div>
+            
 
             <!-- Apply & Clear Filters -->
             <div class="mt-4 flex justify-between fixed bottom-24 left-0 right-0">
