@@ -63,6 +63,13 @@
     <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.industries|truncatechars:30|default:"-" }}</td>
     <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.founded_date|date:"M Y"|default:"-" }}</td>
     <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.founders|truncatechars:30|default:"-" }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">
+        {% if company.created_at > now|date:"Y-m-d H:i:s"|add:"-1 day" %}
+            0 days ago
+        {% else %}
+            {{ company.created_at|timesince|default:"-"|slice:":2" }} days ago
+        {% endif %}
+    </td>
 </tr>
 <tr id="company-{{ company.id }}" class="description-row">
     <td colspan="12" class="pb-4">
