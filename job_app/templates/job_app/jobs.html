@@ -26,12 +26,12 @@
             font-weight: 400;
         }
         .nav-link {
-            color: #64748b;
-            font-weight: 400;
+            /* color: #64748b;
+            font-weight: 400; */
             padding: 0.425rem 0.85rem;
             border-radius: 0.375rem;
             transition: all 0.2s;
-            font-size: 0.80rem;
+            /* font-size: 0.80rem; */
         }
         .nav-link:hover, .nav-link.active {
             color: #0f172a;
@@ -551,16 +551,16 @@
                 <div class="flex items-center space-x-6">
                     <span class="site-name">Pages</span>
                     <div class="flex items-center space-x-4">
-                        <a href="{% url 'companies' %}" class="nav-link">Companies</a>
-                        <a href="{% url 'jobs' %}" class="nav-link active">Jobs</a>
+                        <a href="{% url 'companies' %}" class="text-gray-400 font-light text-sm">Companies</a>
+                        <a href="{% url 'jobs' %}" class="nav-link font-light text-sm active">Jobs</a>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
                     {% if user.is_authenticated %}
-                        <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+                        <a href="{% url 'logout' %}" class="text-gray-400 font-light text-sm">Logout</a>
                     {% else %}
-                        <a href="{% url 'login' %}" class="nav-link">Login</a>
-                        <a href="{% url 'register' %}" class="nav-link">Register</a>
+                        <a href="{% url 'login' %}" class="text-gray-400 font-light text-sm">Login</a>
+                        <a href="{% url 'register' %}" class="text-gray-400 font-light text-sm">Register</a>
                     {% endif %}
                 </div>
             </div>
@@ -710,17 +710,17 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 overflow-hidden">
         <div class="w-full overflow-x-auto">
-        <!-- <h1 class="text-gray-500" style="font-size: 0.80rem;">
+        <h1 class="mobile-hidden text-gray-900 font-light text-base">
             {% if request.GET.list_id %}
                 {% for list in job_lists %}
                     {% if request.GET.list_id == list.id|stringformat:"s" %}
-                        <span class="text-gray-900 font-medium">{{ list.description }}</span>
+                        <span class="">Showing {{ list.description }}</span>
                     {% endif %}
                 {% endfor %}
             {% else %}
-                <span class="text-gray-900 font-light text-base">Filters</span>
+                <span class="text-gray-900 font-light text-base">Showing List of Jobs</span>
             {% endif %}
-        </h1> -->
+        </h1>
 
         <!-- Job Filters -->
         <div class="bg-white rounded-lg py-6 pr-6 mb-8 ml-0 hidden md:block">
@@ -838,30 +838,17 @@
                         <input type="hidden" name="{{ key }}" value="{{ value }}">
                     {% endif %}
                 {% endfor %}
-                <!-- <div class="max-w-md">
-                    <select name="list_id" class="font-light appearance-none" onchange="document.getElementById('listForm').submit()">
+                <div class="inline-flex items-center rounded-md px-2 py-1 bg-white">
+                    <select name="list_id"
+                            class="font-light appearance-none bg-transparent text-black pr-6 focus:outline-none"
+                            onchange="this.form.submit()"
+                    >
                         <option value="" class="font-light text-sm">List of Jobs</option>
-                        <option value="" class="font-light text-sm">List of Companies</option>
-                        <option value="" class="font-light text-sm">About</option>
                         {% for list in job_lists %}
                             <option value="{{ list.id }}" {% if request.GET.list_id == list.id|stringformat:"s" %}selected{% endif %}>
                                 {{ list.description }}
                             </option>
                         {% endfor %}
-                    </select>
-                </div> -->
-
-                <div class="inline-flex items-center rounded-md px-2 py-1 bg-white">
-                    <!-- <select name="list_id"
-                            class="font-light appearance-none bg-transparent text-black pr-6 focus:outline-none"
-                            onchange="this.form.submit()"
-                            > -->
-                    <select name="list_id"
-                            class="font-light appearance-none bg-transparent text-black pr-6 focus:outline-none"
-                    >
-                        <option value="" class="font-light text-sm">List of Jobs</option>
-                        <option value="" class="font-light text-sm">List of Companies</option>
-                        <option value="" class="font-light text-sm">About</option>
                     </select>
                     <!-- Custom Dropdown Icon -->
                     <div class="-ml-5 pointer-events-none">
