@@ -578,7 +578,7 @@
                 <div class="flex items-center space-x-6">
                     <span class="site-name">Pages</span>
                     <div class="flex items-center space-x-4">
-                        <a href="{% url 'companies' %}" class="nav-link active">Companies</a>
+                        <a href="{% url 'companies' %}" class="text-gray-900 font-light text-sm">Companies</a>
                         <a href="{% url 'jobs' %}" class="text-gray-400 font-light text-sm">Jobs</a>
                     </div>
                 </div>
@@ -622,7 +622,7 @@
         <!-- Job Filters -->
         <div class="h-full flex flex-col p-4">
             <form id="filterForm">
-                <div class="" style="height: 60%; overflow-y: auto;">
+                <div class="" style="height: 70%; overflow-y: auto;">
                     <div class="filter-group">
                         <button type="button" class="filter-button w-full flex justify-between items-center px-2 py-2 rounded-md">
                             <span class="font-light text-sm">Name</span>
@@ -799,7 +799,7 @@
 </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 class="mobile-hidden text-gray-900 font-light text-base">
+        <h1 class="text-gray-900 font-light text-base">
             {% if company_filters.list_id %}
                 {% for list in company_lists %}
                     {% if company_filters.list_id == list.id|stringformat:"s" %}

@@ -552,7 +552,7 @@
                     <span class="site-name">Pages</span>
                     <div class="flex items-center space-x-4">
                         <a href="{% url 'companies' %}" class="text-gray-400 font-light text-sm">Companies</a>
-                        <a href="{% url 'jobs' %}" class="nav-link font-light text-sm ">Jobs</a>
+                        <a href="{% url 'jobs' %}" class="text-gray-900 font-light text-sm">Jobs</a>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
@@ -710,7 +710,7 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 overflow-hidden">
         <div class="w-full overflow-x-auto">
-        <h1 class="mobile-hidden text-gray-900 font-light text-base">
+        <h1 class="text-gray-900 font-light text-base">
             {% if request.GET.list_id %}
                 {% for list in job_lists %}
                     {% if request.GET.list_id == list.id|stringformat:"s" %}
