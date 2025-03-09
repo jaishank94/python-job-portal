@@ -17,8 +17,16 @@
              class="w-8 h-8 rounded-full object-cover" />
     </td>
     <td class="px-2 py-4 whitespace-nowrap text-sm font-light md:hidden">
-        <div class="underline">{{ job.title|truncatechars:30 }}</div>
-        <div class="font-light text-sm text-gray-400 my-2">{{ job.company_name|truncatechars:30|default:"-" }}</div>
+        <div class="">
+            <a href="{{ job.url }}" target="_blank" class="hover:underline">
+            {{ job.title|truncatechars:30|default:"-" }}
+        </a>
+    </div>
+        <div class="font-light text-sm text-gray-400 my-2">
+            <a href="{{ job.url }}" target="_blank" class="hover:underline">
+                {{ job.company_name|truncatechars:30|default:"-" }}
+            </a>
+        </div>
     </td>
     <td class="px-2 py-4 whitespace-nowrap text-sm font-light md:hidden">
         {% if job.created_at > now|date:"Y-m-d H:i:s"|add:"-1 day" %}
