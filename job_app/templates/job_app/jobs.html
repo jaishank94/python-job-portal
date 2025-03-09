@@ -28,14 +28,14 @@
         .nav-link {
             /* color: #64748b;
             font-weight: 400; */
-            padding: 0.425rem 0.85rem;
+            /* padding: 0.425rem 0.85rem;
             border-radius: 0.375rem;
-            transition: all 0.2s;
-            /* font-size: 0.80rem; */
+            transition: all 0.2s; */
+            font-size: 0.80rem;
         }
         .nav-link:hover, .nav-link.active {
             color: #0f172a;
-            background-color: #f8fafc;
+            /* background-color: #f8fafc; */
         }
         .site-name {
             color: #64748b;
@@ -552,7 +552,7 @@
                     <span class="site-name">Pages</span>
                     <div class="flex items-center space-x-4">
                         <a href="{% url 'companies' %}" class="text-gray-400 font-light text-sm">Companies</a>
-                        <a href="{% url 'jobs' %}" class="nav-link font-light text-sm active">Jobs</a>
+                        <a href="{% url 'jobs' %}" class="nav-link font-light text-sm ">Jobs</a>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
@@ -714,11 +714,11 @@
             {% if request.GET.list_id %}
                 {% for list in job_lists %}
                     {% if request.GET.list_id == list.id|stringformat:"s" %}
-                        <span class="">Showing {{ list.description }}</span>
+                        <span class=""> {{ list.description }}</span>
                     {% endif %}
                 {% endfor %}
             {% else %}
-                <span class="text-gray-900 font-light text-base">Showing List of Jobs</span>
+                <span class="text-gray-900 font-light text-base"> List of Jobs</span>
             {% endif %}
         </h1>
 
@@ -1204,16 +1204,16 @@
         });
 
         // Modify job links to show popup for non-authenticated users
-        document.addEventListener('DOMContentLoaded', function() {
-            {% if not user.is_authenticated %}
-                const applyButtons = document.querySelectorAll('a[href^="http"]');
-                applyButtons.forEach(button => {
-                    const url = button.getAttribute('href');
-                    button.setAttribute('onclick', `showLoginPopup('${url}', event); return false;`);
-                    button.removeAttribute('href');
-                });
-            {% endif %}
-        });
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     {% if not user.is_authenticated %}
+        //         const applyButtons = document.querySelectorAll('a[href^="http"]');
+        //         applyButtons.forEach(button => {
+        //             const url = button.getAttribute('href');
+        //             button.setAttribute('onclick', `showLoginPopup('${url}', event); return false;`);
+        //             button.removeAttribute('href');
+        //         });
+        //     {% endif %}
+        // });
 
         // Add this new function for mobile card toggle
         function toggleJobCard(card) {

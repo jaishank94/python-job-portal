@@ -28,7 +28,7 @@
         </div>
     </td>
     
-    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">
+    <!-- <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">
         {% if company.valuation %}
             ${{ company.valuation|floatformat:0|intcomma }}M
         {% else %}
@@ -57,17 +57,23 @@
             -
         {% endif %}
     </td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.investors|truncatechars:30|default:"-" }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.investors|truncatechars:30|default:"-" }}</td> -->
     <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.hq|truncatechars:30|default:"-" }}</td>
     <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.offices|truncatechars:30|default:"-" }}</td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.industries|truncatechars:30|default:"-" }}</td>
+    <!-- <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.industries|truncatechars:30|default:"-" }}</td>
     <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.founded_date|date:"M Y"|default:"-" }}</td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.founders|truncatechars:30|default:"-" }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.founders|truncatechars:30|default:"-" }}</td> -->
     <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">
         {% if company.created_at > now|date:"Y-m-d H:i:s"|add:"-1 day" %}
-            0 days ago
+            0 Day
         {% else %}
-            {{ company.created_at|timesince|default:"-"|slice:":2" }} days ago
+            {% with company.created_at|timesince|default:"-" as timesince_value %}
+                {% if timesince_value|slice:":1" == "1" %}
+                    1 Day
+                {% else %}
+                    {{ timesince_value|slice:":2" }} Days 
+                {% endif %}
+            {% endwith %}
         {% endif %}
     </td>
 </tr>

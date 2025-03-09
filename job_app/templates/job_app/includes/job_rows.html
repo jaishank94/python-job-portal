@@ -76,10 +76,16 @@
     </td>
     <td class="px-2 py-4 whitespace-nowrap text-sm font-light mobile-hidden">
         {% if job.created_at > now|date:"Y-m-d H:i:s"|add:"-1 day" %}
-            0 days ago
-        {% else %}
-            {{ job.created_at|timesince|default:"-"|slice:":2" }} days ago
-        {% endif %}
+        0 Day
+    {% else %}
+        {% with job.created_at|timesince|default:"-" as timesince_value %}
+            {% if timesince_value|slice:":1" == "1" %}
+                1 Day
+            {% else %}
+                {{ timesince_value|slice:":2" }} Days 
+            {% endif %}
+        {% endwith %}
+    {% endif %}
     </td>
 </tr>
 <tr id="job-{{ job.id }}" class="description-row">
