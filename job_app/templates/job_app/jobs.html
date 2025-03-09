@@ -549,7 +549,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center space-x-6">
-                    <span class="site-name">Pages</span>
+                    <span class="text-gray-400 font-light text-sm">Pages</span>
                     <div class="flex items-center space-x-4">
                         <a href="{% url 'companies' %}" class="text-gray-400 font-light text-sm">Companies</a>
                         <a href="{% url 'jobs' %}" class="text-gray-900 font-light text-sm">Jobs</a>
@@ -869,10 +869,11 @@
                         <tr>
                             <!-- Mobile-->
                             <th class="px-6 py-3 text-left text-gray-400 font-light text-sm md:hidden"></th>
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm md:hidden">Company</th>
                             <th class="px-6 py-3 text-left text-gray-400 font-light text-sm md:hidden">Position</th>
                             
                             <!-- Desktop / Tab-->
-                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm">Company</th>
+                            <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Company</th>
                             <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Title</th>
                             <!-- <th class="px-6 py-3 text-left text-gray-400 font-light text-sm">Location</th> -->
                             <th class="px-6 py-3 text-left text-gray-400 font-light text-sm mobile-hidden">Years of Experience</th>
