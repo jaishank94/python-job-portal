@@ -799,7 +799,7 @@
 </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 class="text-gray-900 font-light text-base">
+        <h1 class="pl-2 text-gray-900 font-light text-base">
             {% if company_filters.list_id %}
                 {% for list in company_lists %}
                     {% if company_filters.list_id == list.id|stringformat:"s" %}
@@ -823,7 +823,7 @@
                         </svg>
                     </button>
                     <div class="filter-content hidden mt-2">
-                        <input type="text" name="name" value="{{ company_filters.name }}" class="filter-input" placeholder="e.g. Stripe">
+                        <input type="text" name="name" value="{{ company_filters.name }}" class="filter-input text-base md:text-sm px-3 py-2 w-full border rounded-md" placeholder="e.g. Stripe">
                     </div>
                 </div>
 
@@ -835,7 +835,7 @@
                         </svg>
                     </button>
                     <div class="filter-content hidden mt-2">
-                        <input type="text" name="description" value="{{ company_filters.description }}" class="filter-input" placeholder="e.g. Artificial Intelligence">
+                        <input type="text" name="description" value="{{ company_filters.description }}" class="filter-input text-base md:text-sm px-3 py-2 w-full border rounded-md" placeholder="e.g. Artificial Intelligence">
                     </div>
                 </div>
 
@@ -923,7 +923,7 @@
                         </svg>
                     </button>
                     <div class="filter-content hidden mt-2">
-                        <input type="text" name="headquarters" value="{{ company_filters.headquarters }}" class="filter-input" placeholder="e.g. New York City">
+                        <input type="text" name="headquarters" value="{{ company_filters.headquarters }}" class="filter-input text-base md:text-sm px-3 py-2 w-full border rounded-md" placeholder="e.g. New York City">
                     </div>
                 </div>
 
@@ -935,7 +935,7 @@
                         </svg>
                     </button>
                     <div class="filter-content hidden mt-2">
-                        <input type="text" name="offices" value="{{ company_filters.offices }}" class="filter-input" placeholder="e.g. New York City">
+                        <input type="text" name="offices" value="{{ company_filters.offices }}" class="filter-input text-base md:text-sm px-3 py-2 w-full border rounded-md" placeholder="e.g. New York City">
                     </div>
                 </div>
 

@@ -710,7 +710,7 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 overflow-hidden">
         <div class="w-full overflow-x-auto">
-        <h1 class="text-gray-900 font-light text-base">
+        <h1 class="pl-2 text-gray-900 font-light text-base">
             {% if request.GET.list_id %}
                 {% for list in job_lists %}
                     {% if request.GET.list_id == list.id|stringformat:"s" %}
