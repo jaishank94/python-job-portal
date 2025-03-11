@@ -226,6 +226,9 @@ def list_detail(request, list_id):
     })
 
 def jobs_view(request):
+    # Fetch company logos using a dictionary for quick lookup
+    company_logos = dict(Company.objects.values_list('name', 'logo_url'))
+
     # Get all jobs and lists
     jobs = Job.objects.all().order_by('rank', '-created_at')
     
@@ -291,6 +294,10 @@ def jobs_view(request):
         except ValueError:
             pass
 
+    # Assign company logos to jobs manually
+    for job in jobs:
+        job.logo_url = company_logos.get(job.company_name, '')
+        
     # Pagination
     page = request.GET.get('page', 1)
     per_page = 25
