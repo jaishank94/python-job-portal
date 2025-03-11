@@ -42,6 +42,7 @@ class Company(models.Model):
     industries = models.CharField(max_length=255, blank=True, null=True)
     lists = models.ManyToManyField(Lists)
     rank = models.IntegerField(default=0)
+    logo_url = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -67,6 +68,7 @@ class Job(models.Model):
     location = models.CharField(max_length=255, blank=True, null=True)
     lists = models.ManyToManyField(Lists)
     rank = models.IntegerField(default=0)
+    company_logo = models.CharField(max_length=255, blank=True, null=True)
     is_remote = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

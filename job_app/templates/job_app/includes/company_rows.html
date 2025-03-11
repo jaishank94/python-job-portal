@@ -15,6 +15,7 @@
     </td>
     <td class="px-2 py-4 whitespace-nowrap text-sm font-light  md:hidden">{{ company.hq|truncatechars:20|default:"-" }}</td>
 
+    
     <!-- Desktop / Tab -->
     <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-900 flex items-center space-x-3 mobile-hidden">
         <img src="{{ company.logo_url|default:'https://res.cloudinary.com/read-cv/image/upload/c_fill,h_40,w_40/dpr_1.0/v1/1/teams/pZb0dT556KYtJvcNW8mt/profilePhoto-d0711805-831a-4f67-b81d-9b982a9b25ef.png?_a=DATAdtAAZAA0' }}" alt="Company Logo" class="w-8 h-8 rounded-full object-cover" >
@@ -68,7 +69,7 @@
     <!-- <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.industries|truncatechars:30|default:"-" }}</td>
     <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.founded_date|date:"M Y"|default:"-" }}</td>
     <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.founders|truncatechars:30|default:"-" }}</td> -->
-    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">
+    <!-- <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">
         {% if company.created_at > now|date:"Y-m-d H:i:s"|add:"-1 day" %}
             0 Day
         {% else %}
@@ -80,7 +81,7 @@
                 {% endif %}
             {% endwith %}
         {% endif %}
-    </td>
+    </td> -->
 </tr>
 <tr id="company-{{ company.id }}" class="description-row">
     <td colspan="12" class="pb-4">
