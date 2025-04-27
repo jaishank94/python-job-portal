@@ -13,7 +13,11 @@
         </a>
 
     </td>
-    <td class="px-2 py-4 whitespace-nowrap text-sm font-light  md:hidden">{{ company.hq|truncatechars:20|default:"-" }}</td>
+    <td class="px-2 py-4 whitespace-nowrap text-sm font-light  md:hidden">
+        {% if company.hq %}
+            {{ company.hq|truncatechars:30 }}
+        {% endif %}
+    </td>
 
     
     <!-- Desktop / Tab -->
@@ -64,8 +68,16 @@
         {% endif %}
     </td>
     <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.investors|truncatechars:30|default:"-" }}</td> -->
-    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.hq|truncatechars:30|default:"-" }}</td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.offices|truncatechars:30|default:"-" }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">
+        {% if company.hq %}
+            {{ company.hq|truncatechars:30 }}
+        {% endif %}
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">
+        {% if company.offices %}
+            {{ company.offices|truncatechars:30 }}
+        {% endif %}
+    </td>
     <!-- <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.industries|truncatechars:30|default:"-" }}</td>
     <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.founded_date|date:"M Y"|default:"-" }}</td>
     <td class="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-500 mobile-hidden">{{ company.founders|truncatechars:30|default:"-" }}</td> -->
@@ -158,13 +170,17 @@
                             <div>
                                 <div class="font-light text-gray-500 mb-1">Headquarters:</div>
                                 <div class="space-y-1">
-                                    {{ company.hq|default:"Not specified" }}
+                                    {% if company.hq %}
+                                        {{ company.hq|truncatechars:30 }}
+                                    {% endif %}
                                 </div>
                             </div>
                             <div>
                                 <div class="font-light text-gray-500 mb-1">Offices:</div>
                                 <div class="space-y-1">
-                                    {{ company.offices|default:"Not specified" }}
+                                    {% if company.offices %}
+                                        {{ company.offices|truncatechars:30 }}
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>

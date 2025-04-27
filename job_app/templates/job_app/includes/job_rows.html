@@ -27,7 +27,11 @@
             {{ job.title|truncatechars:20|default:"-" }}
         </a>
     </div>
-        <div class="font-light text-sm text-gray-400 my-2">{{ job.location|truncatechars:20|default:"-" }}</div>
+        <div class="font-light text-sm text-gray-400 my-2">
+            {% if job.location %}
+                {{ job.location|truncatechars:20 }}
+            {% endif %} 
+        </div>
 
     <!-- 
         <div class="font-light text-sm text-gray-400 my-2">
@@ -68,7 +72,11 @@
                 {{ job.title|truncatechars:30 }}
             </a>
         </div>
-        <div class="font-light text-sm text-gray-400 my-2">{{ job.location|truncatechars:30|default:"-" }}</div>
+        <div class="font-light text-sm text-gray-400 my-2">
+            {% if job.location %}
+                {{ job.location|truncatechars:20 }}
+            {% endif %} 
+        </div>
     </td>
     <!-- <td class="px-6 py-4 whitespace-nowrap text-sm font-light">{{ job.location|truncatechars:30|default:"-" }}</td> -->
     <td class="px-6 py-4 whitespace-nowrap text-sm font-light mobile-hidden">
@@ -80,12 +88,18 @@
             {% else %}
                 0-{{ job.max_years_of_experience }}
             {% endif %}
-        {% else %}
-            -
         {% endif %}
     </td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm font-light mobile-hidden">{{ job.level|default:"-" }}</td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm font-light mobile-hidden">{{ job.skills|truncatechars:30|default:"-" }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light mobile-hidden">
+        {% if job.level %}
+            {{ job.level }}
+        {% endif %} 
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-light mobile-hidden">
+        {% if job.skills %}
+            {{ job.skills }}
+        {% endif %} 
+    </td>
     <td class="px-6 py-4 whitespace-nowrap text-sm font-light mobile-hidden">
         {% if job.min_salary and job.max_salary %}
             ${{ job.min_salary|floatformat:0|intcomma }} - ${{ job.max_salary|floatformat:0|intcomma }}
@@ -93,8 +107,6 @@
             ${{ job.min_salary|floatformat:0|intcomma }}+
         {% elif job.max_salary %}
             Up to ${{ job.max_salary|floatformat:0|intcomma }}
-        {% else %}
-            -
         {% endif %}
     </td>
     <td class="px-2 py-4 whitespace-nowrap text-sm font-light mobile-hidden">
@@ -164,8 +176,6 @@
                                     {% else %}
                                         0-{{ job.max_years_of_experience }}
                                     {% endif %}
-                                {% else %}
-                                    Not specified
                                 {% endif %}
                                 </div>
                                 
@@ -173,7 +183,9 @@
                             <div>
                                 <div class="font-light text-gray-500 mb-1">Level</div>
                                 <div class="space-y-1">
-                                    {{ job.level|default:"Not specified" }}
+                                    {% if job.level %}
+                                        {{ job.level }}
+                                    {% endif %} 
                                 </div>
                             </div>
                         </div>
@@ -186,7 +198,9 @@
                     <div>
                         <div class="font-light text-gray-500 mb-1">Skills</div>
                         <div class="space-y-1">
-                            {{ job.skills|default:"Not specified" }}
+                            {% if job.skills %}
+                                {{ job.skills }}
+                            {% endif %} 
                         </div>
                     </div>
 
@@ -200,8 +214,6 @@
                                 ${{ job.min_salary|floatformat:0|intcomma }}+
                             {% elif job.max_salary %}
                                 Up to ${{ job.max_salary|floatformat:0|intcomma }}
-                            {% else %}
-                                Not specified
                             {% endif %}
                         </div>
                     </div>
