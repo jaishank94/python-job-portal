@@ -21,7 +21,9 @@ from job_app import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.jobs_view, name='jobs'),
+    path('jobs/<slug:slug>/', views.jobs_view, name='jobs_by_slug'),
     path('companies/', views.companies_view, name='companies'),
+    path('companies/<slug:slug>/', views.companies_view, name='companies_by_slug'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('register/', views.register, name='register'),

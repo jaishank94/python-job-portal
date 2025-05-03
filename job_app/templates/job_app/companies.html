@@ -8,16 +8,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="icon" type="image/png" href="{% static 'job_app/logo.png' %}">
     <title>
-        {% if company_filters.list_id %}
-            {% for list in company_lists %}
-                {% if company_filters.list_id == list.id|stringformat:"s" %}
-                    {{ list.description }} - Pages
-                {% endif %}
-            {% endfor %}
+        {% if list_description %}
+            {{ list_description }} - Pages
         {% else %}
             List of Companies - Pages
         {% endif %}
     </title>
+    
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -801,16 +798,13 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 class="pl-2 text-gray-900 font-light text-base">
-            {% if company_filters.list_id %}
-                {% for list in company_lists %}
-                    {% if company_filters.list_id == list.id|stringformat:"s" %}
-                        <span> {{ list.description }}</span>
-                    {% endif %}
-                {% endfor %}
+            {% if list_description %}
+                <span>{{ list_description }}</span>
             {% else %}
-                <span class="text-gray-900 font-light text-base"> List of Companies</span>
+                <span class="text-gray-900 font-light text-base">List of Companies</span>
             {% endif %}
         </h1>
+        
 
         <!-- Company Filters -->
         <div class="bg-white rounded-lg py-6 pr-6 mb-8 ml-0 hidden md:block">
@@ -1000,16 +994,16 @@
                     btn.classList.remove('active');
                 });
                 
-                // Get the current list_id from URL
+                // Get the current list_description from URL
                 const urlParams = new URLSearchParams(window.location.search);
-                const listId = urlParams.get('list_id');
+                const listId = urlParams.get('list_description');
                 
                 // Clear the form and submit
                 form.submit();
                 
-                // If there was a list_id, redirect to preserve it
+                // If there was a list_description, redirect to preserve it
                 if (listId) {
-                    window.location.href = '?list_id=' + listId;
+                    window.location.href = '?list_description=' + listId;
                 }
             }
 
@@ -1042,17 +1036,17 @@
 
                 if (!activeForm) return; // Exit if no visible form is found
 
-                // Get the current list_id from URL
+                // Get the current list_description from URL
                 const urlParams = new URLSearchParams(window.location.search);
-                const listId = urlParams.get('list_id');
+                const listId = urlParams.get('list_description');
 
                 // Check if the hidden input already exists to avoid duplicates
-                let existingInput = activeForm.querySelector('input[name="list_id"]');
+                let existingInput = activeForm.querySelector('input[name="list_description"]');
 
                 if (!existingInput && listId) {
                     const listIdInput = document.createElement('input');
                     listIdInput.type = 'hidden';
-                    listIdInput.name = 'list_id';
+                    listIdInput.name = 'list_description';
                     listIdInput.value = listId;
                     activeForm.appendChild(listIdInput);
                 }
@@ -1224,15 +1218,27 @@
                 
                 <div class="inline-flex items-center rounded-md px-2 py-1 bg-white">
                     
-                    <select name="list_id"
+                    <!-- <select name="list_description"
                             class="font-light appearance-none bg-transparent text-black pr-6 focus:outline-none"
                             onchange="this.form.submit()"
                     >
                         <option value="" class="font-light text-sm">List of Companies</option>
                         {% for list in company_lists %}
-                            <option value="{{ list.id }}" {% if company_filters.list_id == list.id|stringformat:"s" %}selected{% endif %} class="font-light text-sm">{{ list.description }}</option>
+                            <option value="{{ list.description }}" {% if company_filters.list_description == list.description|stringformat:"s" %}selected{% endif %} class="font-light text-sm">{{ list.description }}</option>
+                        {% endfor %}
+                    </select> -->
+                    <select 
+                        onchange="window.location.href = this.value ? '/companies/' + this.value + '/' : '/companies/'"
+                        class="font-light appearance-none bg-transparent text-black pr-6 focus:outline-none"
+                    >
+                        <option value="" class="font-light text-sm">List of Companies</option>
+                        {% for list in company_lists %}
+                            <option class="font-light text-sm" value="{{ list.slug }}" {% if current_slug == list.slug %}selected{% endif %}>
+                                {{ list.description }}
+                            </option>
                         {% endfor %}
                     </select>
+                    
                     <!-- Custom Dropdown Icon -->
                     <div class="-ml-5 pointer-events-none">
                         <svg class="w-4 h-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1427,7 +1433,7 @@
 
         {% if companies.has_next %}
             <div class="flex justify-center py-4">
-                <button id="loadMoreBtn" class="apply-button" onclick="loadMore()">
+                <button id="loadMoreBtn" class="apply-button" onclick="loadMore()" data-page="1">
                     Load More
                 </button>
             </div>
@@ -1494,14 +1500,13 @@
         }
 
         function loadMore() {
-            const currentPage = new URLSearchParams(window.location.search).get('page') || 1;
-            const nextPage = parseInt(currentPage) + 1;
-            
             const button = document.getElementById('loadMoreBtn');
+            const currentPage = parseInt(button.dataset.page || '1');
+            const nextPage = currentPage + 1;
+
             button.textContent = 'Loading...';
             button.disabled = true;
 
-            // Add page parameter to current URL
             const url = new URL(window.location.href);
             url.searchParams.set('page', nextPage);
 
@@ -1512,28 +1517,19 @@
             })
             .then(response => response.json())
             .then(data => {
-                document.getElementById('companiesTableBody').insertAdjacentHTML('beforeend', data.html);
-                
-                // Re-apply styling to new rows
-                const newRows = document.querySelectorAll('.table-row');
-                newRows.forEach(row => {
-                    const websiteButton = row.querySelector('a.text-xs');
-                    if (websiteButton) {
-                        websiteButton.className = 'text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-1 rounded transition-colors duration-200';
-                    }
-                });
-                
+                document.getElementById('jobsTableBody').insertAdjacentHTML('beforeend', data.html);
+
                 if (!data.has_next) {
                     button.style.display = 'none';
                 } else {
                     button.textContent = 'Load More';
                     button.disabled = false;
+                    button.dataset.page = nextPage;
                 }
-
-                // Update URL without refreshing
-                window.history.pushState({}, '', url);
             });
         }
+
+
 
         function showLoginPopup(url, e) {
             if (e) {

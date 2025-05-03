@@ -225,20 +225,20 @@ def list_detail(request, list_id):
         'all_company_names': all_company_names,
     })
 
-def jobs_view(request):
+def jobs_view(request, slug=None):
     # Fetch company logos using a dictionary for quick lookup
     company_logos = dict(Company.objects.values_list('name', 'logo_url'))
 
-    # Get all jobs and lists
+    # Get all jobs and job lists
     jobs = Job.objects.all().order_by('rank', '-created_at')
-    
-    # Get all job lists for the dropdown
     job_lists = Lists.objects.filter(type='JOB').order_by('description')
-    
+
+    selected_list_description = ''
+    selected_slug = ''
+
     # Job filters
     job_filters = {
-        'list_id': request.GET.get('list_id', ''),  # Changed from job_list to list_id
-        'title': request.GET.get('title', ''),  # Changed from job_title
+        'title': request.GET.get('title', ''),
         'company': request.GET.get('company', ''),
         'location': request.GET.get('location', ''),
         'level': request.GET.get('level', ''),
@@ -251,11 +251,14 @@ def jobs_view(request):
         'max_years_experience': request.GET.get('max_years_experience', ''),
     }
 
-    # Filter jobs by list if selected
-    if job_filters['list_id']:
+    # Filter jobs by slug if provided
+    if slug:
         try:
-            jobs = jobs.filter(lists__id=job_filters['list_id'])
-        except ValueError:
+            selected_list = Lists.objects.get(slug=slug, type='JOB')
+            jobs = selected_list.job_set.all().order_by('rank', '-created_at')
+            selected_list_description = selected_list.description
+            selected_slug = selected_list.slug
+        except Lists.DoesNotExist:
             pass
 
     # Apply job filters
@@ -294,10 +297,10 @@ def jobs_view(request):
         except ValueError:
             pass
 
-    # Assign company logos to jobs manually
+    # Assign company logos to jobs
     for job in jobs:
         job.logo_url = company_logos.get(job.company_name, '')
-        
+
     # Pagination
     page = request.GET.get('page', 1)
     per_page = 25
@@ -312,18 +315,23 @@ def jobs_view(request):
         'jobs': items,
         'job_filters': job_filters,
         'job_lists': job_lists,
+        'current_slug': selected_slug,
+        'list_description': selected_list_description,
     })
 
-def companies_view(request):
+def companies_view(request, slug=None):
     # Get all companies and lists
     companies = Company.objects.all().order_by('rank', 'name')
     
     # Get all company lists for the dropdown
     company_lists = Lists.objects.filter(type='COMPANY').order_by('description')
     
+    selected_list_description = ''
+    selected_slug = slug
+
     # Company filters
     company_filters = {
-        'list_id': request.GET.get('list_id', ''),
+        'list_description': request.GET.get('list_description', ''),
         'name': request.GET.get('name', ''),
         'description': request.GET.get('description', ''),
         'min_valuation': request.GET.get('min_valuation', ''),
@@ -343,11 +351,12 @@ def companies_view(request):
         'investors': request.GET.get('investors', ''),
     }
 
-    # Filter companies by list if selected
-    if company_filters['list_id']:
+    # Filter by slug if provided
+    if slug:
         try:
-            selected_list = Lists.objects.get(id=company_filters['list_id'])
+            selected_list = Lists.objects.get(slug=slug, type='COMPANY')
             companies = selected_list.company_set.all().order_by('rank', 'name')
+            selected_list_description = selected_list.description
         except Lists.DoesNotExist:
             pass
 
@@ -431,4 +440,6 @@ def companies_view(request):
         'companies': items,
         'company_filters': company_filters,
         'company_lists': company_lists,
+        'current_slug': selected_slug,
+        'list_description': selected_list_description,
     })

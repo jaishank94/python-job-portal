@@ -15,6 +15,12 @@ class Lists(models.Model):
     is_on_homepage = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    slug = models.SlugField(unique=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.description)
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'List'

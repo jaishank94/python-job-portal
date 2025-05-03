@@ -8,12 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="icon" type="image/png" href="{% static 'job_app/logo.png' %}">
     <title>
-        {% if request.GET.list_id %}
-            {% for list in job_lists %}
-                {% if request.GET.list_id == list.id|stringformat:"s" %}
-                    {{ list.description }} - Pages
-                {% endif %}
-            {% endfor %}
+        {% if list_description %}
+            {{ list_description }} - Pages
         {% else %}
             List of Jobs - Pages
         {% endif %}
@@ -713,14 +709,10 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 overflow-hidden">
         <div class="w-full overflow-x-auto">
         <h1 class="pl-2 text-gray-900 font-light text-base">
-            {% if request.GET.list_id %}
-                {% for list in job_lists %}
-                    {% if request.GET.list_id == list.id|stringformat:"s" %}
-                        <span class=""> {{ list.description }}</span>
-                    {% endif %}
-                {% endfor %}
+            {% if list_description %}
+                <span>{{ list_description }}</span>
             {% else %}
-                <span class="text-gray-900 font-light text-base"> List of Jobs</span>
+                <span class="text-gray-900 font-light text-base">List of Jobs</span>
             {% endif %}
         </h1>
 
@@ -836,22 +828,44 @@
         <div class="bg-white py-6 pr-6 mb-8 ml-0">
             <form method="GET" class="w-full" id="listForm">
                 {% for key, value in request.GET.items %}
-                    {% if key != 'list_id' and key != 'page' %}
+                    {% if key != 'list_description' and key != 'page' %}
                         <input type="hidden" name="{{ key }}" value="{{ value }}">
                     {% endif %}
                 {% endfor %}
                 <div class="inline-flex items-center rounded-md px-2 py-1 bg-white">
-                    <select name="list_id"
+                    <!-- <select name="list_description"
                             class="font-light appearance-none bg-transparent text-black pr-6 focus:outline-none"
                             onchange="this.form.submit()"
                     >
                         <option value="" class="font-light text-sm">List of Jobs</option>
                         {% for list in job_lists %}
-                            <option value="{{ list.id }}" {% if request.GET.list_id == list.id|stringformat:"s" %}selected{% endif %}>
+                            <option value="{{ list.id }}" {% if request.GET.list_description == list.id|stringformat:"s" %}selected{% endif %}>
+                                {{ list.description }}
+                            </option>
+                        {% endfor %}
+                    </select> -->
+                    <select name="slug"
+                            class="font-light appearance-none bg-transparent text-black pr-6 focus:outline-none"
+                            onchange="window.location.href = this.value ? '/jobs/' + this.value + '/' : '/'">
+                        <option value="" class="font-light text-sm">List of Jobs</option>
+                        {% for list in job_lists %}
+                            <option class="font-light text-sm" value="{{ list.slug }}" {% if list.slug == current_slug %}selected{% endif %}>
                                 {{ list.description }}
                             </option>
                         {% endfor %}
                     </select>
+
+                    <!-- <select 
+                        onchange="window.location.href = this.value ? '/companies/' + this.value + '/' : '/companies/'"
+                        class="font-light appearance-none bg-transparent text-black pr-6 focus:outline-none"
+                    >
+                        <option value="" class="font-light text-sm">List of Companies</option>
+                        {% for list in company_lists %}
+                            <option class="font-light text-sm" value="{{ list.slug }}" {% if current_slug == list.slug %}selected{% endif %}>
+                                {{ list.description }}
+                            </option>
+                        {% endfor %}
+                    </select> -->
                     <!-- Custom Dropdown Icon -->
                     <div class="-ml-5 pointer-events-none">
                         <svg class="w-4 h-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -943,7 +957,7 @@
 
         {% if jobs.has_next %}
             <div class="flex justify-center py-4">
-                <button id="loadMoreBtn" class="apply-button" onclick="loadMore()">
+                <button id="loadMoreBtn" class="apply-button" onclick="loadMore()" data-page="1">
                     Load More
                 </button>
             </div>
@@ -1003,16 +1017,16 @@
                 btn.classList.remove('active');
             });
             
-            // Get the current list_id from URL
+            // Get the current list_description from URL
             const urlParams = new URLSearchParams(window.location.search);
-            const listId = urlParams.get('list_id');
+            const listId = urlParams.get('list_description');
             
             // Clear the form and submit
             form.submit();
             
-            // If there was a list_id, redirect to preserve it
+            // If there was a list_description, redirect to preserve it
             if (listId) {
-                window.location.href = '?list_id=' + listId;
+                window.location.href = '?list_description=' + listId;
             }
         }
 
@@ -1172,17 +1186,17 @@
 
             if (!activeForm) return; // No visible form found, exit function
 
-            // Get the current list_id from URL
+            // Get the current list_description from URL
             const urlParams = new URLSearchParams(window.location.search);
-            const listId = urlParams.get('list_id');
+            const listId = urlParams.get('list_description');
 
             // Check if the hidden input already exists to avoid duplicates
-            let existingInput = activeForm.querySelector('input[name="list_id"]');
+            let existingInput = activeForm.querySelector('input[name="list_description"]');
 
             if (!existingInput && listId) {
                 const listIdInput = document.createElement('input');
                 listIdInput.type = 'hidden';
-                listIdInput.name = 'list_id';
+                listIdInput.name = 'list_description';
                 listIdInput.value = listId;
                 activeForm.appendChild(listIdInput);
             }
