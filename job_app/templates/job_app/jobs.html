@@ -1131,14 +1131,14 @@
         }
 
         function loadMore() {
-            const currentPage = new URLSearchParams(window.location.search).get('page') || 1;
-            const nextPage = parseInt(currentPage) + 1;
-            
+            const currentPage = parseInt(document.getElementById('loadMoreBtn').dataset.page || '1');
+            const nextPage = currentPage + 1;
+
             const button = document.getElementById('loadMoreBtn');
             button.textContent = 'Loading...';
             button.disabled = true;
 
-            // Add page parameter to current URL
+            // Clone current URL without modifying the address bar
             const url = new URL(window.location.href);
             url.searchParams.set('page', nextPage);
 
@@ -1150,27 +1150,18 @@
             .then(response => response.json())
             .then(data => {
                 document.getElementById('jobsTableBody').insertAdjacentHTML('beforeend', data.html);
-                
-                // Re-apply styling to new rows
-                const newRows = document.querySelectorAll('.table-row');
-                newRows.forEach(row => {
-                    const applyButton = row.querySelector('a.text-xs');
-                    if (applyButton) {
-                        applyButton.className = 'text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-1 rounded transition-colors duration-200';
-                    }
-                });
-                
+
                 if (!data.has_next) {
                     button.style.display = 'none';
                 } else {
                     button.textContent = 'Load More';
                     button.disabled = false;
+                    // Update page count internally, not in URL
+                    button.dataset.page = nextPage;
                 }
-
-                // Update URL without refreshing
-                window.history.pushState({}, '', url);
             });
         }
+
 
         function applyFilters() {
             // Select only the visible form (ignore hidden forms)

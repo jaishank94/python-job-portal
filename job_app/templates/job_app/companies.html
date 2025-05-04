@@ -1500,13 +1500,14 @@
         }
 
         function loadMore() {
-            const button = document.getElementById('loadMoreBtn');
-            const currentPage = parseInt(button.dataset.page || '1');
+            const currentPage = parseInt(document.getElementById('loadMoreBtn').dataset.page || '1');
             const nextPage = currentPage + 1;
 
+            const button = document.getElementById('loadMoreBtn');
             button.textContent = 'Loading...';
             button.disabled = true;
 
+            // Clone current URL without modifying the address bar
             const url = new URL(window.location.href);
             url.searchParams.set('page', nextPage);
 
@@ -1517,17 +1518,19 @@
             })
             .then(response => response.json())
             .then(data => {
-                document.getElementById('jobsTableBody').insertAdjacentHTML('beforeend', data.html);
+                document.getElementById('companiesTableBody').insertAdjacentHTML('beforeend', data.html);
 
                 if (!data.has_next) {
                     button.style.display = 'none';
                 } else {
                     button.textContent = 'Load More';
                     button.disabled = false;
+                    // Update page count internally, not in URL
                     button.dataset.page = nextPage;
                 }
             });
         }
+
 
 
 
